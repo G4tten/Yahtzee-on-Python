@@ -2,5 +2,8 @@ import random
 import pygame
 
 pygame.init()
+ 
+screen_width = 800; 
+screen_height = 600; 
 
-#da qui inizia il tribbolo per capire come creare le meccaniche di gioco in primis ma anche finestra del gioco e altro 
+screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
