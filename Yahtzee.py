@@ -17,15 +17,25 @@ pygame.display.set_caption("Yahtzee Game")
 
 background = (242, 229, 191)
 
+immagini_dadi = [pygame.image.load("immagini/dadi/1.png"), pygame.image.load("immagini/dadi/2.png")]
+
+resize_immagine = pygame.transform.scale(immagine, (100,100))
+
+size_immagine = immagine.get_size()
+
+print(f"Dimesioni dell'immaigine: {size_immagine}")
+
 run = True
 while run: #game loop
-
-    screen.fill(background)
 
     for event in pygame.event.get(): #gestore di eventi
         if event.type == pygame.QUIT: #Quando viene cliccata la x della finestra il gioco si chiude (fondamentale per uscire dal ciclo infinito)
             run = False
     
+    screen.fill(background)
+
+    screen.blit(resize_immagine, (100,100))
+
     pygame.display.flip() #per aggiornare lo schermo
 
 pygame.quit() #Termina il programma
