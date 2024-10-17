@@ -44,16 +44,39 @@ pygame.quit() #Termina il programma
 
 class giocatore:
 
-    def __init__(self, username, punteggio, scheda):
-            self.username = username
+    def __init__(self, username=None):
+            if username is None :
+                self.username= input("Inserisci il tuo username: ")
+            else:
+                self.username = username
 
-            # tabellone con categorie
-            # punteggio totale del giocatore
+            self.punteggio = 0
+            self.scheda= {
+               "Uno" : 0,
+               "Due" : 0, 
+               "Tre" : 0, 
+               "Quattro" : 0,
+               "Cinque" : 0,
+               "Sei" : 0, 
+               "Tris" :0,
+               "Quadris" : 0,
+               "Full" : 0,
+               "Scala" : 0,
+               "Yahtzee":0
+            }
+
+    def mostra_punteggio(self):
+        print(f"Scheda punteggio del giocatore {self.username}:")
+        for categoria, punteggio in self.scheda.items():
+            print(f"{categoria}: {punteggio}")
 
 
-giocatore1 = input("Inserire il nome del giocatore1: ")
+################################################################################jk
 
-print(f"Giocatore1: {giocatore1}")
+giocatore1= giocatore()
+print (f"Il nome del giocatore 1 é {giocatore1.username}")
+
+giocatore1.mostra_punteggio()
 
 ################################################################################
 
