@@ -98,5 +98,3 @@ class Game:
     def __init__(self, giocatori):
         self.giocatori = giocatori #lista di oggetti giocatori
         self.dadi= [Dado() in range (5)]
-
-
