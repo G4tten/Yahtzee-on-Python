@@ -19,9 +19,9 @@ background = (242, 229, 191)
 
 immagini_dadi = [pygame.image.load("immagini/dadi/1.png"), pygame.image.load("immagini/dadi/2.png")]
 
-resize_immagine = pygame.transform.scale(immagine, (100,100))
+resize_immagine = [pygame.transform.scale(immagine, (80,80)) for immagine in immagini_dadi]
 
-size_immagine = immagine.get_size()
+size_immagine = [img.get_size() for img in resize_immagine]
 
 print(f"Dimesioni dell'immaigine: {size_immagine}")
 
@@ -34,7 +34,8 @@ while run: #game loop
     
     screen.fill(background)
 
-    screen.blit(resize_immagine, (100,100))
+    screen.blit(resize_immagine[0], (50,100))
+    screen.blit(resize_immagine[1], (140,100))
 
     pygame.display.flip() #per aggiornare lo schermo
 
