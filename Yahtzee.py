@@ -65,8 +65,11 @@ class giocatore:
 
 giocatore1= giocatore()
 print (f"Il nome del giocatore 1 é {giocatore1.username}")
-
 giocatore1.mostra_punteggio()
+
+giocatore2= giocatore()
+print (f"Il nome del giocatore 1 é {giocatore2.username}")
+giocatore2.mostra_punteggio()
 
 ################################################################################
 
@@ -80,19 +83,12 @@ class Dado:
     def lancio_dadi(self):
         self.valore= random.randint(1,6)
         return self.valore
-    
-#Lancio dei dadi simulato, dopo lo rivediamo !
-
-dado1= Dado()
-dado2= Dado()
-dado3= Dado()
-dado4= Dado()
-dado5= Dado()
-print (dado1.lancio_dadi())
-print (dado2.lancio_dadi())
-print (dado3.lancio_dadi())
-print (dado4.lancio_dadi())
-print (dado5.lancio_dadi())
 
 ###############################################################################
+
+class Game:
+    def __init__(self, giocatori):
+        self.giocatori = giocatori #lista di oggetti giocatori
+        self.dadi= [Dado() in range (5)]
+
 
