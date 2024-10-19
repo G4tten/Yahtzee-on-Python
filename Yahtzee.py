@@ -8,12 +8,13 @@ screen_height = 750;
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
-font = pygame.font.Font('font/casino.ttf', 28) #GRANDEZZA FONT DA SISTEMARE!!
+font = pygame.font.Font('font/casino.ttf', 28) #GRANDEZZA E STILE FONT DA SISTEMARE!!
 
 #Palette di colori che pensavo di usare:
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 orange = (253, 139, 81)
+dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 
@@ -73,6 +74,8 @@ size_immagine = [img.get_size() for img in resize_immagine]
 #Classe dado, contiene gli attributi di valore e la funzione del lancio dadi
 
 tiro = False
+counter = 0
+max_tiri = 3
 
 class Dado:
 
@@ -116,6 +119,8 @@ dadi = [dado1, dado2, dado3, dado4, dado5]
 
 btn_testo = font.render("Tira!", True, white)
 
+tira_btn_colore = orange
+
 ###############################################################################
 
 # class Game:
@@ -131,7 +136,14 @@ while run: #game loop
     for dado in dadi:
         dado.draw()
 
-    tira_btn = pygame.draw.rect(screen, orange, [150, 180, 280, 50]) #MISURE DA SISTEMARE!!
+    if counter >= max_tiri:
+        tira_btn_colore = dark_orange
+        btn_testo = font.render("Tiri finiti", True, white)
+    else :
+        tira_btn_colore = orange
+        btn_testo = font.render("Tira!", True, white)
+
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 280, 50]) #MISURE DA SISTEMARE!!
 
     screen.blit(btn_testo, [155, 190]) #MISURE DA SISTEMARE!!
 
@@ -140,14 +152,14 @@ while run: #game loop
             run = False
         
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if tira_btn.collidepoint(event.pos):
+            if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True
+                counter = counter + 1
 
     if tiro:
         for dado in dadi:
             dado.lancio_dadi()
             tiro = False
-
 
     pygame.display.flip() #per aggiornare lo schermo
 
