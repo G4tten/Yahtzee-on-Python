@@ -8,14 +8,14 @@ screen_height = 750;
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
-font = pygame.font.Font('font/casino.ttf', 28)
+font = pygame.font.Font('font/casino.ttf', 28) #GRANDEZZA FONT DA SISTEMARE!!
 
 #Palette di colori che pensavo di usare:
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 orange = (253, 139, 81)
 bordeaux = (203, 96, 64)
-white = (0, 0, 0)
+white = (255, 255, 255)
 
 background = beige
 
@@ -25,7 +25,7 @@ resize_immagine = [pygame.transform.scale(img, (100,100)) for img in immagini_da
 
 size_immagine = [img.get_size() for img in resize_immagine]
 
-print(f"Dimesioni dell'immaigine: {size_immagine}")
+# print(f"Dimesioni dell'immaigine: {size_immagine}")
 
 #Le istruzioni che seguono non verranno eseguite sulla finestra di gioco ma sul terminale di Visual Studio
 
@@ -72,6 +72,8 @@ print(f"Dimesioni dell'immaigine: {size_immagine}")
 
 #Classe dado, contiene gli attributi di valore e la funzione del lancio dadi
 
+tiro = False
+
 class Dado:
 
     def __init__(self, x_pos, y_pos, num, key):
@@ -79,7 +81,7 @@ class Dado:
         self.y_pos = y_pos
         self.numero = num
         self.key = key
-        self.dado = ''
+        # self.dado = ''
 
     def draw(self):
         if self.numero == 1:
@@ -101,9 +103,18 @@ class Dado:
             screen.blit(resize_immagine[5], (self.x_pos, self.y_pos))
 
 
-    # def lancio_dadi(self):
-    #     self.valore= random.randint(1,6)
-    #     return self.valore
+    def lancio_dadi(self):
+        self.numero = random.randint(1, 6)
+
+dado1 = Dado(10, 50, 1, 0)
+dado2 = Dado(130, 50, 2, 1)
+dado3 = Dado(250, 50, 3, 2)
+dado4 = Dado(370, 50, 4, 3)
+dado5 = Dado(490, 50, 5, 4)
+
+dadi = [dado1, dado2, dado3, dado4, dado5]
+
+btn_testo = font.render("Tira!", True, white)
 
 ###############################################################################
 
@@ -117,27 +128,26 @@ while run: #game loop
 
     screen.fill(background)
 
-    btn_testo = font.render("Clicca qui per tirare!", True, white)
+    for dado in dadi:
+        dado.draw()
 
-    dado1 = Dado(10, 50, 1, 0)
-    dado2 = Dado(130, 50, 5, 1)
-    dado3 = Dado(250, 50, 3, 2)
-    dado4 = Dado(370, 50, 6, 3)
-    dado5 = Dado(490, 50, 2, 4)
+    tira_btn = pygame.draw.rect(screen, orange, [150, 180, 280, 50]) #MISURE DA SISTEMARE!!
 
-    dado1.draw()
-    dado2.draw()
-    dado3.draw()
-    dado4.draw()
-    dado5.draw()
-
-    tira_btn = pygame.draw.rect(screen, orange, [150, 180, 280, 50]) #dobbiamo prendere le misure precise!!
-
-    screen.blit(btn_testo, [155, 190])
+    screen.blit(btn_testo, [155, 190]) #MISURE DA SISTEMARE!!
 
     for event in pygame.event.get(): #gestore di eventi
         if event.type == pygame.QUIT: #Quando viene cliccata la x della finestra il gioco si chiude (fondamentale per uscire dal ciclo infinito)
             run = False
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if tira_btn.collidepoint(event.pos):
+                tiro = True
+
+    if tiro:
+        for dado in dadi:
+            dado.lancio_dadi()
+            tiro = False
+
 
     pygame.display.flip() #per aggiornare lo schermo
 
