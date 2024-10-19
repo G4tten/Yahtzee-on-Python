@@ -119,6 +119,8 @@ dadi = [dado1, dado2, dado3, dado4, dado5]
 
 btn_testo = font.render("Tira!", True, white)
 
+fine_btn = pygame.draw.rect(screen, bordeaux, [150, 250, 280, 50])
+
 tira_btn_colore = orange
 
 ###############################################################################
@@ -143,6 +145,9 @@ while run: #game loop
         tira_btn_colore = orange
         btn_testo = font.render("Tira!", True, white)
 
+    if counter == max_tiri:
+        fine_btn = pygame.draw.rect(screen, bordeaux, [150, 250, 280, 50])
+
     tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 280, 50]) #MISURE DA SISTEMARE!!
 
     screen.blit(btn_testo, [155, 190]) #MISURE DA SISTEMARE!!
@@ -155,6 +160,8 @@ while run: #game loop
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True
                 counter = counter + 1
+            if fine_btn.collidepoint(event.pos) and counter == max_tiri:
+                counter = 0
 
     if tiro:
         for dado in dadi:
