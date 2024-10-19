@@ -8,14 +8,16 @@ screen_height = 750;
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
+font = pygame.font.Font('font/casino.ttf', 28)
 
 #Palette di colori che pensavo di usare:
-#Teal -> rgb(37, 113, 128)
-#Beige -> rgb(242, 229, 191)
-#Orange -> rgb(253, 139, 81)
-#Bordeaux -> rgb(203, 96, 64)
+teal = (37, 113, 128)
+beige = (242, 229, 191)
+orange = (253, 139, 81)
+bordeaux = (203, 96, 64)
+white = (0, 0, 0)
 
-background = (242, 229, 191)
+background = beige
 
 immagini_dadi = [pygame.image.load("immagini/dadi/1.png"), pygame.image.load("immagini/dadi/2.png"), pygame.image.load("immagini/dadi/3.png"), pygame.image.load("immagini/dadi/4.png"), pygame.image.load("immagini/dadi/5.png"), pygame.image.load("immagini/dadi/6.png")]
 
@@ -115,6 +117,8 @@ while run: #game loop
 
     screen.fill(background)
 
+    btn_testo = font.render("Clicca qui per tirare!", True, white)
+
     dado1 = Dado(10, 50, 1, 0)
     dado2 = Dado(130, 50, 5, 1)
     dado3 = Dado(250, 50, 3, 2)
@@ -126,6 +130,10 @@ while run: #game loop
     dado3.draw()
     dado4.draw()
     dado5.draw()
+
+    tira_btn = pygame.draw.rect(screen, orange, [150, 180, 280, 50]) #dobbiamo prendere le misure precise!!
+
+    screen.blit(btn_testo, [155, 190])
 
     for event in pygame.event.get(): #gestore di eventi
         if event.type == pygame.QUIT: #Quando viene cliccata la x della finestra il gioco si chiude (fondamentale per uscire dal ciclo infinito)
