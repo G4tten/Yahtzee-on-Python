@@ -4,7 +4,7 @@ import pygame
 pygame.init()
  
 screen_width = 600; 
-screen_height = 750; 
+screen_height = 950; 
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
@@ -17,6 +17,8 @@ orange = (253, 139, 81)
 dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
+black = (0,0,0)
+
 
 background = beige
 
@@ -119,21 +121,54 @@ dadi = [dado1, dado2, dado3, dado4, dado5]
 
 btn_testo = font.render("Tira!", True, white)
 
-fine_btn = pygame.draw.rect(screen, bordeaux, [150, 250, 280, 50])
+fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])
 
 tira_btn_colore = orange
 
 ###############################################################################
+#griglia dei punteggi
 
-# class Game:
-#     def __init__(self, giocatori):
-#         self.giocatori = giocatori #lista di oggetti giocatori
-#         self.dadi= [Dado() in range (5)]
+# Crea il font 
+font = pygame.font.Font('font/casino.ttf', 36)
+
+# Lista delle combinazioni da visualizzare nella colonna di sinistra
+combinazioni = [
+    "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", 
+    "Tris", "Quadris", "Full", "Scala", "Yahtzee", "Totale"
+]
+
+def disegna_griglia (schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
+    colore_griglia= (0,0,0)
+
+    sfondo_griglia = pygame.Rect(x_inizio, y_inizio, colonne * larghezza_cella, righe * altezza_cella)
+    pygame.draw.rect(schermo, white, sfondo_griglia)
+
+
+    for riga in range(righe):
+        for colonna in range(colonne):
+            rettangolo= pygame.Rect(x_inizio+ colonna *larghezza_cella, y_inizio + riga *altezza_cella, larghezza_cella, altezza_cella)
+            pygame.draw.rect (schermo, colore_griglia, rettangolo, 3)
+    
+     # Aggiungi il testo delle combinazioni nella prima colonna
+    for indice, combinazione in enumerate(combinazioni):
+        if indice < righe:  # Assicurati di non eccedere il numero di righe
+            testo = font.render(combinazione, True, black)  # Renderizza il testo
+            schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))  # Posiziona il testo con un piccolo margine
+
+larghezza_cella = 150
+altezza_cella= 50
+righe = 12
+colonne=3
+
+
+
 
 run = True
 while run: #game loop
 
     screen.fill(background)
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
+
 
     for dado in dadi:
         dado.draw()
@@ -146,9 +181,9 @@ while run: #game loop
         btn_testo = font.render("Tira!", True, white)
 
     if counter == max_tiri:
-        fine_btn = pygame.draw.rect(screen, bordeaux, [150, 250, 280, 50])
+        fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
 
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 280, 50]) #MISURE DA SISTEMARE!!
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50]) #MISURE DA SISTEMARE!!
 
     screen.blit(btn_testo, [155, 190]) #MISURE DA SISTEMARE!!
 
