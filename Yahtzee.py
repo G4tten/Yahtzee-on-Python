@@ -8,7 +8,7 @@ screen_height = 750;
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
-font = pygame.font.Font(None, 28) #GRANDEZZA E STILE FONT DA SISTEMARE!!
+font = pygame.font.Font('font/casino.ttf', 28) #GRANDEZZA E STILE FONT DA SISTEMARE!!
 
 #Palette di colori che pensavo di usare:
 teal = (37, 113, 128)
