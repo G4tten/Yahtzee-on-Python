@@ -159,8 +159,8 @@ larghezza_cella = 150
 altezza_cella= 50
 righe = 12
 colonne=3
-offset_x= 65
-offset_y=280
+offset_x= 65 #indica da dove parte il tabellone da sinistra
+offset_y=280 #indica da dove parte il tabellone dall'alto
 
 #click sulla casella
 def rileva_clic(x,y):
@@ -174,6 +174,7 @@ def rileva_clic(x,y):
         colonna = x_relativo // larghezza_cella
         riga = y_relativo // altezza_cella
         
+        #Aggiorniamo poi per il salvataggio dei punteggi
         print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
         return colonna, riga
     
