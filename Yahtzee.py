@@ -4,7 +4,7 @@ import pygame
 pygame.init()
  
 screen_width = 600; 
-screen_height = 950; 
+screen_height = 900; 
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
@@ -159,6 +159,29 @@ larghezza_cella = 150
 altezza_cella= 50
 righe = 12
 colonne=3
+offset_x= 65
+offset_y=280
+
+#click sulla casella
+def rileva_clic(x,y):
+    if offset_x <= x <= offset_x + colonne * larghezza_cella and \
+       offset_y <= y <= offset_y + righe * altezza_cella:
+        
+        x_relativo = x - offset_x
+        y_relativo = y - offset_y
+        
+        # Calcola la colonna e la riga cliccate
+        colonna = x_relativo // larghezza_cella
+        riga = y_relativo // altezza_cella
+        
+        print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
+        return colonna, riga
+    
+    else:
+        print('Clic fuori dalla griglia')
+        return None, None
+
+
 
 
 
@@ -192,11 +215,18 @@ while run: #game loop
             run = False
         
         if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True
                 counter = counter + 1
             if fine_btn.collidepoint(event.pos) and counter == max_tiri:
                 counter = 0
+
+            colonna, riga = rileva_clic(mouse_x,mouse_y)
+           
+            if colonna is not None and riga is not None:
+                print(f"Hai cliccato sulla cella ({riga}, {colonna})")
 
     if tiro:
         for dado in dadi:
