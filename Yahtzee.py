@@ -28,53 +28,6 @@ resize_immagine = [pygame.transform.scale(img, (100,100)) for img in immagini_da
 
 size_immagine = [img.get_size() for img in resize_immagine]
 
-# print(f"Dimesioni dell'immaigine: {size_immagine}")
-
-#Le istruzioni che seguono non verranno eseguite sulla finestra di gioco ma sul terminale di Visual Studio
-
-# class giocatore:
-
-#     def __init__(self, username=None):
-#             if username is None :
-#                 self.username= input("Inserisci il tuo username: ")
-#             else:
-#                 self.username = username
-
-#             self.punteggio = 0
-#             self.scheda= {
-#                "Uno" : 0,
-#                "Due" : 0, 
-#                "Tre" : 0, 
-#                "Quattro" : 0,
-#                "Cinque" : 0,
-#                "Sei" : 0, 
-#                "Tris" :0,
-#                "Quadris" : 0,
-#                "Full" : 0,
-#                "Scala" : 0,
-#                "Yahtzee":0
-#             }
-
-#     def mostra_punteggio(self):
-#         print(f"Scheda punteggio del giocatore {self.username}:")
-#         for categoria, punteggio in self.scheda.items():
-#             print(f"{categoria}: {punteggio}")
-
-
-################################################################################jk
-
-# giocatore1= giocatore()
-# print (f"Il nome del giocatore 1 é {giocatore1.username}")
-# giocatore1.mostra_punteggio()
-
-# giocatore2= giocatore()
-# print (f"Il nome del giocatore 1 é {giocatore2.username}")
-# giocatore2.mostra_punteggio()
-
-################################################################################
-
-#Classe dado, contiene gli attributi di valore e la funzione del lancio dadi
-
 tiro = False
 counter = 0
 max_tiri = 3
@@ -124,9 +77,6 @@ btn_testo = font.render("Tira!", True, white)
 fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])
 
 tira_btn_colore = orange
-
-###############################################################################
-#griglia dei punteggi
 
 # Crea il font 
 font = pygame.font.Font('font/casino.ttf', 36)
@@ -186,7 +136,7 @@ def rileva_clic(x,y):
 
 
 
-
+#########################################################################################
 run = True
 while run: #game loop
 
