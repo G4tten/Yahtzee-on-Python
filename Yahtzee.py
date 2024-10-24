@@ -78,7 +78,31 @@ fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])
 
 tira_btn_colore = orange
 
-# Crea il font 
+# def seleziona_dadi(x,y,dadi):
+    # for dado in dadi:
+    #     if dado.x_pos <= x <= dado.x_pos + 100 and dado.y_pos <= y <= dado.y_pos + 100:
+
+    # if offset_x <= x <= offset_x + colonne * larghezza_cella and \
+    #    offset_y <= y <= offset_y + righe * altezza_cella:
+        
+    #     x_relativo = x - offset_x
+    #     y_relativo = y - offset_y
+        
+    #     # Calcola la colonna e la riga cliccate
+    #     colonna = x_relativo // larghezza_cella
+    #     riga = y_relativo // altezza_cella
+        
+    #     #Aggiorniamo poi per il salvataggio dei punteggi
+    #     print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
+    #     return colonna, riga
+    
+    # else:
+    #     print('Clic fuori dalla griglia')
+    #     return None, None
+
+
+
+# Crea il font
 font = pygame.font.Font('font/casino.ttf', 36)
 
 # Lista delle combinazioni da visualizzare nella colonna di sinistra
@@ -88,7 +112,7 @@ combinazioni = [
 ]
 
 def disegna_griglia (schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
-    colore_griglia= (0,0,0)
+    colore_griglia= black
 
     sfondo_griglia = pygame.Rect(x_inizio, y_inizio, colonne * larghezza_cella, righe * altezza_cella)
     pygame.draw.rect(schermo, white, sfondo_griglia)
@@ -131,9 +155,6 @@ def rileva_clic(x,y):
     else:
         print('Clic fuori dalla griglia')
         return None, None
-
-
-
 
 
 #########################################################################################
