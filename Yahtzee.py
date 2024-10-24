@@ -3,8 +3,8 @@ import pygame
 
 pygame.init()
  
-screen_width = 600; 
-screen_height = 900; 
+screen_width = 600 
+screen_height = 775 # 
 
 screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
 pygame.display.set_caption("Yahtzee Game")
