@@ -115,7 +115,7 @@ offset_y=280 #indica da dove parte il tabellone dall'alto
 #click sulla casella
 def rileva_clic(x,y):
     if offset_x <= x <= offset_x + colonne * larghezza_cella and \
-       offset_y <= y <= offset_y + righe * altezza_cella:
+       offset_y <= y <= offset_y + righe * altezza_cella: # controlla se il clic é avvenuto fra l'inizio e la fine della tabella
         
         x_relativo = x - offset_x
         y_relativo = y - offset_y
@@ -132,6 +132,54 @@ def rileva_clic(x,y):
         print('Clic fuori dalla griglia')
         return None, None
 
+def calcola_punteggi(dadi):
+    conteggio_dadi= [0] * 6 #lista che contiene sei 0
+    for dado in dadi:
+        conteggio_dadi[dado.numero - 1] += 1 #aggiorna l'occorrenza di ogni numero uscito (es. se escono 3 1, la casella dell'uno, ovvero la prima, conterá 3 )
+
+        punteggi = {} #creo un dizionario vuoto
+        punteggi["Uno"]= conteggio_dadi[0] * 1
+        punteggi["Due"]= conteggio_dadi[1] * 2
+        punteggi["Tre"]= conteggio_dadi[2] * 3
+        punteggi["Quattro"]= conteggio_dadi[3] * 4
+        punteggi["Cinque"] = conteggio_dadi [4] * 5
+        punteggi["Sei"]= conteggio_dadi [5]* 6
+        
+        if max(conteggio_dadi) >=3 : #prende il numero con occorrenza maggiore
+            punteggi["Tris"] = sum([dado.numero for dado in dadi]) 
+        else:
+            punteggi["Tris"]= 0
+
+        if max(conteggio_dadi) >=4 :
+            punteggi["Quadris"]= sum([dado.numero for dado in dadi])
+        else:
+            punteggi["Quadris"]= 0
+
+        if 3 in conteggio_dadi and 2 in conteggio_dadi:
+            punteggi["Full"] = 25
+        else:
+            punteggi["Full"] = 0
+        
+        if sorted(set([dado.numero for dado in dadi])) in [list(range(1,6)), list(range(2,7))]: 
+            #dado.num for dado in dadi= crea una lista con i numeri presenti
+            #set= rimuove duplicati
+            #sorted= va a ordinare i dadi
+            punteggi["Scala"]= 40
+        else:
+            punteggi["Scala"]= 0
+        
+        if max(conteggio_dadi) == 5 :
+            punteggi["Yathzee"]= 50
+
+        return punteggi
+    
+    # Calcola i punteggi per questi dadi
+punteggi = calcola_punteggi(dadi)
+
+# Stampa il dizionario dei punteggi
+print("Punteggi calcolati:")
+for combinazione, punteggio in punteggi.items():
+    print(f"{combinazione}: {punteggio}")
 
 
 
