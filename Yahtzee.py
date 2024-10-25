@@ -132,12 +132,12 @@ def rileva_clic(x,y):
         print('Clic fuori dalla griglia')
         return None, None
 
+punteggi = {} #creo un dizionario vuoto
 def calcola_punteggi(dadi):
     conteggio_dadi= [0] * 6 #lista che contiene sei 0
     for dado in dadi:
         conteggio_dadi[dado.numero - 1] += 1 #aggiorna l'occorrenza di ogni numero uscito (es. se escono 3 1, la casella dell'uno, ovvero la prima, conterá 3 )
 
-        punteggi = {} #creo un dizionario vuoto
         punteggi["Uno"]= conteggio_dadi[0] * 1
         punteggi["Due"]= conteggio_dadi[1] * 2
         punteggi["Tre"]= conteggio_dadi[2] * 3
@@ -169,18 +169,11 @@ def calcola_punteggi(dadi):
             punteggi["Scala"]= 0
         
         if max(conteggio_dadi) == 5 :
-            punteggi["Yathzee"]= 50
+            punteggi["Yahtzee"]= 50
+        else:
+            punteggi["Yahtzee"]=0
 
-        return punteggi
-    
-    # Calcola i punteggi per questi dadi
-punteggi = calcola_punteggi(dadi)
-
-# Stampa il dizionario dei punteggi
-print("Punteggi calcolati:")
-for combinazione, punteggio in punteggi.items():
-    print(f"{combinazione}: {punteggio}")
-
+    return punteggi
 
 
 
@@ -219,8 +212,10 @@ while run: #game loop
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True
                 counter = counter + 1
+                
             if fine_btn.collidepoint(event.pos) and counter == max_tiri:
                 counter = 0
+                
 
             colonna, riga = rileva_clic(mouse_x,mouse_y)
            
@@ -230,7 +225,16 @@ while run: #game loop
     if tiro:
         for dado in dadi:
             dado.lancio_dadi()
+            punteggi = calcola_punteggi(dadi)
             tiro = False
+    
+    #Anteprima dei punteggi
+    y_offset = 290 #da dove parte il testo
+    for combinazione, punteggio in punteggi.items():
+        testo_punteggio = font.render(f"{punteggio}", True, black)
+        screen.blit(testo_punteggio, (280, y_offset))
+        y_offset += 50  # Spaziatura tra i punteggi
+
 
     pygame.display.flip() #per aggiornare lo schermo
 
