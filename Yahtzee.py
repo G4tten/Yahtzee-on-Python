@@ -18,6 +18,7 @@ dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 black = (0,0,0)
+gray = (128,128,128)
 
 
 background = beige
@@ -296,9 +297,13 @@ while run: #game loop
             tiro = False
     
     #Anteprima dei punteggi
-    y_offset = 290 #da dove parte il testo
+    y_offset = 290  # da dove parte il testo
     for combinazione, punteggio in punteggi.items():
-        testo_punteggio = font.render(f"{punteggio}", True, black)
+        if combinazione in tabellone:  # Mostra il punteggio definitivo solo se confermato
+            testo_punteggio = font.render(f"{tabellone[combinazione]}", True, black)
+        else:  # Mostra il punteggio provvisorio se non confermato
+            testo_punteggio = font.render(f"{punteggio}", True, gray)
+        
         screen.blit(testo_punteggio, (280, y_offset))
         y_offset += 50  # Spaziatura tra i punteggi
 
