@@ -237,9 +237,21 @@ def salva_punteggi(colonna, riga, punteggi):
     
     if colonna == 1 and riga == 10 :
         tabellone["Yahtzee"] = punteggi["Yahtzee"]
-    
+
+    for combinazione in punteggi:
+        if combinazione not in tabellone:  # mantiene solo il valore salvato
+            punteggi[combinazione] = " "
+
     return tabellone
+
+
+def totale(tabellone):
+    totale=0
+    for punteggio in tabellone.values:
+        totale += punteggio
     
+    return totale
+
 
 #########################################################################################
 run = True
@@ -296,7 +308,7 @@ while run: #game loop
             punteggi = calcola_punteggi(dadi)
             tiro = False
     
-    #Anteprima dei punteggi
+    # Punteggi
     y_offset = 290  # da dove parte il testo
     for combinazione, punteggio in punteggi.items():
         if combinazione in tabellone:  # Mostra il punteggio definitivo solo se confermato
