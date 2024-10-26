@@ -87,8 +87,10 @@ combinazioni = [
     "Tris", "Quadris", "Full", "Scala", "Yahtzee", "Totale"
 ]
 
+
+
 def disegna_griglia (schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
-    colore_griglia= (0,0,0)
+    colore_griglia= black
 
     sfondo_griglia = pygame.Rect(x_inizio, y_inizio, colonne * larghezza_cella, righe * altezza_cella)
     pygame.draw.rect(schermo, white, sfondo_griglia)
