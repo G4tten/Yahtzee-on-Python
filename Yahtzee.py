@@ -202,6 +202,43 @@ def calcola_punteggi(dadi):
 
     return punteggi
 
+tabellone = {}
+def salva_punteggi(colonna, riga, punteggi):
+    if colonna == 1 and riga == 0 :
+        tabellone["Uno"] = punteggi["Uno"]
+    
+    if colonna == 1 and riga == 1 :
+        tabellone["Due"] = punteggi["Due"]
+    
+    if colonna == 1 and riga == 2 :
+        tabellone["Tre"] = punteggi["Tre"]
+    
+    if colonna == 1 and riga == 3 :
+        tabellone["Quattro"] = punteggi["Quattro"]
+    
+    if colonna == 1 and riga == 4 :
+        tabellone["Cinque"] = punteggi["Cinque"]
+    
+    if colonna == 1 and riga == 5 :
+        tabellone["Sei"] = punteggi["Sei"]  
+    
+    if colonna == 1 and riga == 6 :
+        tabellone["Tris"] = punteggi["Tris"]
+    
+    if colonna == 1 and riga == 7 :
+        tabellone["Quadris"] = punteggi["Quadris"]
+    
+    if colonna == 1 and riga == 8 :
+        tabellone["Full"] = punteggi["Full"]
+    
+    if colonna == 1 and riga == 9 :
+        tabellone["Scala"] = punteggi["Scala"]
+    
+    if colonna == 1 and riga == 10 :
+        tabellone["Yahtzee"] = punteggi["Yahtzee"]
+    
+    return tabellone
+    
 
 #########################################################################################
 run = True
@@ -247,6 +284,10 @@ while run: #game loop
            
             if colonna is not None and riga is not None:
                 print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                salva_punteggi(colonna, riga, punteggi)
+                print(f"Tabellone aggiornato: {tabellone}")
+
+
 
     if tiro:
         for dado in dadi:
