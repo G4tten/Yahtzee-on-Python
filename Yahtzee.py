@@ -78,7 +78,31 @@ fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])
 
 tira_btn_colore = orange
 
-# Crea il font 
+# def seleziona_dadi(x,y,dadi):
+    # for dado in dadi:
+    #     if dado.x_pos <= x <= dado.x_pos + 100 and dado.y_pos <= y <= dado.y_pos + 100:
+
+    # if offset_x <= x <= offset_x + colonne * larghezza_cella and \
+    #    offset_y <= y <= offset_y + righe * altezza_cella:
+        
+    #     x_relativo = x - offset_x
+    #     y_relativo = y - offset_y
+        
+    #     # Calcola la colonna e la riga cliccate
+    #     colonna = x_relativo // larghezza_cella
+    #     riga = y_relativo // altezza_cella
+        
+    #     #Aggiorniamo poi per il salvataggio dei punteggi
+    #     print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
+    #     return colonna, riga
+    
+    # else:
+    #     print('Clic fuori dalla griglia')
+    #     return None, None
+
+
+
+# Crea il font
 font = pygame.font.Font('font/casino.ttf', 36)
 
 # Lista delle combinazioni da visualizzare nella colonna di sinistra
@@ -140,6 +164,7 @@ def calcola_punteggi(dadi):
     for dado in dadi:
         conteggio_dadi[dado.numero - 1] += 1 #aggiorna l'occorrenza di ogni numero uscito (es. se escono 3 1, la casella dell'uno, ovvero la prima, conterá 3 )
 
+
         punteggi["Uno"]= conteggio_dadi[0] * 1
         punteggi["Due"]= conteggio_dadi[1] * 2
         punteggi["Tre"]= conteggio_dadi[2] * 3
@@ -176,7 +201,6 @@ def calcola_punteggi(dadi):
             punteggi["Yahtzee"]=0
 
     return punteggi
-
 
 
 #########################################################################################
