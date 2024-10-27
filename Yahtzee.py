@@ -247,79 +247,100 @@ def salva_punteggi(colonna, riga, punteggi):
 
 def totale(tabellone):
     totale=0
-    for punteggio in tabellone.values:
+    for punteggio in tabellone.values():
         totale += punteggio
     
     return totale
 
 
 #########################################################################################
-run = True
-while run: #game loop
+# Variabili di inizializzazione e configurazioni Pygame
+run = True  # Variabile per mantenere attivo il ciclo di gioco
+tiro = False  # Stato del tiro di dadi
+counter = 0  # Conteggio dei tiri effettuati
 
+while run:  # Inizio del ciclo principale del gioco (game loop)
+
+    # Aggiorna lo sfondo
     screen.fill(background)
+    
+    # Disegna la griglia del tabellone
     disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
 
-
+    # Disegna i dadi sullo schermo
     for dado in dadi:
         dado.draw()
 
+    # Imposta il pulsante "Tira!" o "Tiri finiti" in base al numero di lanci rimanenti
     if counter >= max_tiri:
         tira_btn_colore = dark_orange
         btn_testo = font.render("Tiri finiti", True, white)
-    else :
+    else:
         tira_btn_colore = orange
         btn_testo = font.render("Tira!", True, white)
 
+    # Disegna il pulsante di fine tiri se il numero massimo di lanci è stato raggiunto
     if counter == max_tiri:
         fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
 
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50]) #MISURE DA SISTEMARE!!
+    # Disegna il pulsante "Tira!" con il colore e testo aggiornati
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50])
 
-    screen.blit(btn_testo, [155, 190]) #MISURE DA SISTEMARE!!
+    # Mostra il testo del pulsante "Tira!" sopra il pulsante
+    screen.blit(btn_testo, [155, 190])
 
-    for event in pygame.event.get(): #gestore di eventi
-        if event.type == pygame.QUIT: #Quando viene cliccata la x della finestra il gioco si chiude (fondamentale per uscire dal ciclo infinito)
+    # Gestore degli eventi Pygame
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:  # Se l'utente chiude la finestra
             run = False
-        
+
+        # Gestione dei click del mouse
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             
+            # Controlla se il pulsante "Tira!" è stato cliccato e se ci sono tiri disponibili
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True
-                counter = counter + 1
-                
-            if fine_btn.collidepoint(event.pos) and counter == max_tiri:
-                counter = 0
-                
+                counter += 1
 
-            colonna, riga = rileva_clic(mouse_x,mouse_y)
-           
+            # Controlla se il pulsante "Fine Tiri" è stato cliccato (dopo il numero massimo di lanci)
+            if fine_btn.collidepoint(event.pos) and counter == max_tiri:
+                counter = 0  # Resetta il conteggio dei tiri per il prossimo turno
+
+            # Controlla se è stata cliccata una cella del tabellone e salva il punteggio
+            colonna, riga = rileva_clic(mouse_x, mouse_y)
             if colonna is not None and riga is not None:
                 print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                salva_punteggi(colonna, riga, punteggi)
+                salva_punteggi(colonna, riga, punteggi)  # Salva il punteggio nella cella specificata
                 print(f"Tabellone aggiornato: {tabellone}")
 
-
-
+    # Se il tiro è stato effettuato
     if tiro:
         for dado in dadi:
-            dado.lancio_dadi()
-            punteggi = calcola_punteggi(dadi)
-            tiro = False
-    
-    # Punteggi
-    y_offset = 290  # da dove parte il testo
+            dado.lancio_dadi()  # Lancia i dadi
+        punteggi = calcola_punteggi(dadi)  # Calcola i punteggi in base ai risultati del lancio
+        tiro = False  # Reimposta lo stato del tiro per il prossimo turno
+
+    # Mostra i punteggi sul tabellone
+    y_offset = 290  # Posizione iniziale del testo
     for combinazione, punteggio in punteggi.items():
-        if combinazione in tabellone:  # Mostra il punteggio definitivo solo se confermato
+        if combinazione in tabellone:
+            # Mostra il punteggio definitivo in nero se confermato nel tabellone
             testo_punteggio = font.render(f"{tabellone[combinazione]}", True, black)
-        else:  # Mostra il punteggio provvisorio se non confermato
+        else:
+            # Mostra il punteggio provvisorio in grigio se non confermato
             testo_punteggio = font.render(f"{punteggio}", True, gray)
         
-        screen.blit(testo_punteggio, (280, y_offset))
-        y_offset += 50  # Spaziatura tra i punteggi
+        screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
+        y_offset += 50  # Spaziatura tra le righe
 
+    # Calcola il totale dei punteggi e lo visualizza sul tabellone
+    totale_punteggi = totale(tabellone)  # Funzione per calcolare il totale nel dizionario `tabellone`
+    totale_text = font.render(f"{totale_punteggi}", True, black)
+    screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
 
-    pygame.display.flip() #per aggiornare lo schermo
+    # Aggiorna lo schermo di gioco
+    pygame.display.flip()
 
-pygame.quit() #Termina il programma
+# Uscita dal programma
+pygame.quit()
