@@ -76,7 +76,6 @@ class Dado:
         for dado in dadi:
             if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
                 dado.selezionato = not dado.selezionato
-                print(f"Il dado {dado} è stato selezionato!")
 
     # Metodo per lanciare il dado e generare un nuovo numero casuale
     def lancio_dadi(self):
@@ -317,7 +316,8 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     # Se il tiro è stato effettuato
     if tiro:
         for dado in dadi:
-            dado.lancio_dadi()  # Lancia i dadi
+            if dado.selezionato == False:
+                dado.lancio_dadi()  # Lancia i dadi
         punteggi = calcola_punteggi(dadi)  # Calcola i punteggi in base ai risultati del lancio
         tiro = False  # Reimposta lo stato del tiro per il prossimo turno
 
