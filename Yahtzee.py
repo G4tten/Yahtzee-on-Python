@@ -1,256 +1,173 @@
 import random
 import pygame
 
+# Inizializzazione di Pygame
 pygame.init()
- 
+
+# Configurazione dello schermo e delle dimensioni
 screen_width = 600 
 screen_height = 900 
 
-screen = pygame.display.set_mode((screen_width, screen_height)) #creazione della finestra di gioco
-pygame.display.set_caption("Yahtzee Game")
-font = pygame.font.Font('font/casino.ttf', 28) #GRANDEZZA E STILE FONT DA SISTEMARE!!
+screen = pygame.display.set_mode((screen_width, screen_height))  # Creazione della finestra di gioco
+pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 
-#Palette di colori che pensavo di usare:
+# Configurazione del font per il testo
+font = pygame.font.Font('font/casino.ttf', 28)  # Font personalizzato per il testo (stile e grandezza)
+
+# Palette di colori
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 orange = (253, 139, 81)
 dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
-black = (0,0,0)
-gray = (128,128,128)
+black = (0, 0, 0)
+gray = (128, 128, 128)
 
-
+# Imposta il colore di sfondo
 background = beige
 
-immagini_dadi = [pygame.image.load("immagini/dadi/1.png"), pygame.image.load("immagini/dadi/2.png"), pygame.image.load("immagini/dadi/3.png"), pygame.image.load("immagini/dadi/4.png"), pygame.image.load("immagini/dadi/5.png"), pygame.image.load("immagini/dadi/6.png")]
+# Caricamento delle immagini dei dadi
+immagini_dadi = [
+    pygame.image.load("immagini/dadi/1.png"),
+    pygame.image.load("immagini/dadi/2.png"),
+    pygame.image.load("immagini/dadi/3.png"),
+    pygame.image.load("immagini/dadi/4.png"),
+    pygame.image.load("immagini/dadi/5.png"),
+    pygame.image.load("immagini/dadi/6.png")
+]
 
-resize_immagine = [pygame.transform.scale(img, (100,100)) for img in immagini_dadi]
+# Ridimensiona le immagini dei dadi a 100x100 pixel
+resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
 
+# Ottieni le dimensioni delle immagini ridimensionate
 size_immagine = [img.get_size() for img in resize_immagine]
 
-tiro = False
-counter = 0
-max_tiri = 3
+# Variabili per la gestione del tiro
+tiro = False  # Stato del tiro (attivo o no)
+counter = 0  # Numero di tiri effettuati
+max_tiri = 3  # Numero massimo di tiri per turno
 
+# Classe per rappresentare i dadi
 class Dado:
-
     def __init__(self, x_pos, y_pos, num, key):
+        # Posizione, numero attuale e identificativo del dado
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.numero = num
         self.key = key
-        # self.dado = ''
 
     def draw(self):
-        if self.numero == 1:
-            screen.blit(resize_immagine[0], (self.x_pos, self.y_pos))
-        
-        if self.numero == 2:
-            screen.blit(resize_immagine[1], (self.x_pos, self.y_pos))
-        
-        if self.numero == 3:
-            screen.blit(resize_immagine[2], (self.x_pos, self.y_pos))
-
-        if self.numero == 4:
-            screen.blit(resize_immagine[3], (self.x_pos, self.y_pos))
-
-        if self.numero == 5:
-            screen.blit(resize_immagine[4], (self.x_pos, self.y_pos))
-        
-        if self.numero == 6:
-            screen.blit(resize_immagine[5], (self.x_pos, self.y_pos))
-
+        # Disegna l'immagine del dado corrispondente al numero attuale
+        screen.blit(resize_immagine[self.numero - 1], (self.x_pos, self.y_pos))
 
     def lancio_dadi(self):
+        # Genera un nuovo valore casuale per il dado
         self.numero = random.randint(1, 6)
 
+# Creazione di 5 dadi con posizioni iniziali e numeri
 dado1 = Dado(10, 50, 1, 0)
 dado2 = Dado(130, 50, 2, 1)
 dado3 = Dado(250, 50, 3, 2)
 dado4 = Dado(370, 50, 4, 3)
 dado5 = Dado(490, 50, 5, 4)
 
+# Lista contenente tutti i dadi
 dadi = [dado1, dado2, dado3, dado4, dado5]
 
+# Configurazione del pulsante "Tira!"
 btn_testo = font.render("Tira!", True, white)
-
-fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])
-
+fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])  # Pulsante di fine turno
 tira_btn_colore = orange
 
-# def seleziona_dadi(x,y,dadi):
-    # for dado in dadi:
-    #     if dado.x_pos <= x <= dado.x_pos + 100 and dado.y_pos <= y <= dado.y_pos + 100:
-
-    # if offset_x <= x <= offset_x + colonne * larghezza_cella and \
-    #    offset_y <= y <= offset_y + righe * altezza_cella:
-        
-    #     x_relativo = x - offset_x
-    #     y_relativo = y - offset_y
-        
-    #     # Calcola la colonna e la riga cliccate
-    #     colonna = x_relativo // larghezza_cella
-    #     riga = y_relativo // altezza_cella
-        
-    #     #Aggiorniamo poi per il salvataggio dei punteggi
-    #     print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
-    #     return colonna, riga
-    
-    # else:
-    #     print('Clic fuori dalla griglia')
-    #     return None, None
-
-
-
-# Crea il font
+# Font e combinazioni del tabellone
 font = pygame.font.Font('font/casino.ttf', 36)
-
-# Lista delle combinazioni da visualizzare nella colonna di sinistra
 combinazioni = [
     "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", 
     "Tris", "Quadris", "Full", "Scala", "Yahtzee", "Totale"
 ]
 
+# Funzione per disegnare la griglia del tabellone
+def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
+    colore_griglia = black
 
-
-def disegna_griglia (schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
-    colore_griglia= black
-
+    # Sfondo della griglia
     sfondo_griglia = pygame.Rect(x_inizio, y_inizio, colonne * larghezza_cella, righe * altezza_cella)
     pygame.draw.rect(schermo, white, sfondo_griglia)
 
-
+    # Disegna le celle della griglia
     for riga in range(righe):
         for colonna in range(colonne):
-            rettangolo= pygame.Rect(x_inizio+ colonna *larghezza_cella, y_inizio + riga *altezza_cella, larghezza_cella, altezza_cella)
-            pygame.draw.rect (schermo, colore_griglia, rettangolo, 3)
+            rettangolo = pygame.Rect(
+                x_inizio + colonna * larghezza_cella,
+                y_inizio + riga * altezza_cella,
+                larghezza_cella, altezza_cella
+            )
+            pygame.draw.rect(schermo, colore_griglia, rettangolo, 3)
     
-     # Aggiungi il testo delle combinazioni nella prima colonna
+    # Aggiungi i nomi delle combinazioni nella prima colonna
     for indice, combinazione in enumerate(combinazioni):
-        if indice < righe:  # Assicurati di non eccedere il numero di righe
-            testo = font.render(combinazione, True, black)  # Renderizza il testo
-            schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))  # Posiziona il testo con un piccolo margine
+        if indice < righe:
+            testo = font.render(combinazione, True, black)
+            schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))
 
+# Configurazione griglia del tabellone
 larghezza_cella = 150
-altezza_cella= 50
+altezza_cella = 50
 righe = 12
-colonne=3
-offset_x= 65 #indica da dove parte il tabellone da sinistra
-offset_y=280 #indica da dove parte il tabellone dall'alto
+colonne = 3
+offset_x = 65  # Offset griglia (sinistra)
+offset_y = 280  # Offset griglia (alto)
 
-#click sulla casella
-def rileva_clic(x,y):
+# Funzione per rilevare clic sulla griglia
+def rileva_clic(x, y):
     if offset_x <= x <= offset_x + colonne * larghezza_cella and \
-       offset_y <= y <= offset_y + righe * altezza_cella: # controlla se il clic é avvenuto fra l'inizio e la fine della tabella
-        
+       offset_y <= y <= offset_y + righe * altezza_cella:
         x_relativo = x - offset_x
         y_relativo = y - offset_y
-        
-        # Calcola la colonna e la riga cliccate
         colonna = x_relativo // larghezza_cella
         riga = y_relativo // altezza_cella
-        
-        #Aggiorniamo poi per il salvataggio dei punteggi
-        print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
         return colonna, riga
-    
     else:
-        print('Clic fuori dalla griglia')
         return None, None
 
-punteggi = {} #creo un dizionario vuoto
+# Dizionario dei punteggi
+punteggi = {}
 def calcola_punteggi(dadi):
-    conteggio_dadi= [0] * 6 #lista che contiene sei 0
+    conteggio_dadi = [0] * 6  # Occorrenze di ogni numero (1-6)
     for dado in dadi:
-        conteggio_dadi[dado.numero - 1] += 1 #aggiorna l'occorrenza di ogni numero uscito (es. se escono 3 1, la casella dell'uno, ovvero la prima, conterá 3 )
+        conteggio_dadi[dado.numero - 1] += 1
 
+        # Calcola i punteggi per ogni combinazione
+        punteggi["Uno"] = conteggio_dadi[0] * 1
+        punteggi["Due"] = conteggio_dadi[1] * 2
+        punteggi["Tre"] = conteggio_dadi[2] * 3
+        punteggi["Quattro"] = conteggio_dadi[3] * 4
+        punteggi["Cinque"] = conteggio_dadi[4] * 5
+        punteggi["Sei"] = conteggio_dadi[5] * 6
 
-        punteggi["Uno"]= conteggio_dadi[0] * 1
-        punteggi["Due"]= conteggio_dadi[1] * 2
-        punteggi["Tre"]= conteggio_dadi[2] * 3
-        punteggi["Quattro"]= conteggio_dadi[3] * 4
-        punteggi["Cinque"] = conteggio_dadi [4] * 5
-        punteggi["Sei"]= conteggio_dadi [5]* 6
-        
-        if max(conteggio_dadi) >=3 : #prende il numero con occorrenza maggiore
-            punteggi["Tris"] = sum([dado.numero for dado in dadi]) 
-        else:
-            punteggi["Tris"]= 0
-
-        if max(conteggio_dadi) >=4 :
-            punteggi["Quadris"]= sum([dado.numero for dado in dadi])
-        else:
-            punteggi["Quadris"]= 0
-
-        if 3 in conteggio_dadi and 2 in conteggio_dadi:
-            punteggi["Full"] = 25
-        else:
-            punteggi["Full"] = 0
-        
-        if sorted(set([dado.numero for dado in dadi])) in [list(range(1,6)), list(range(2,7))]: 
-            #dado.num for dado in dadi= crea una lista con i numeri presenti
-            #set= rimuove duplicati
-            #sorted= va a ordinare i dadi
-            punteggi["Scala"]= 40
-        else:
-            punteggi["Scala"]= 0
-        
-        if max(conteggio_dadi) == 5 :
-            punteggi["Yahtzee"]= 50
-        else:
-            punteggi["Yahtzee"]=0
+        punteggi["Tris"] = sum([dado.numero for dado in dadi]) if max(conteggio_dadi) >= 3 else 0
+        punteggi["Quadris"] = sum([dado.numero for dado in dadi]) if max(conteggio_dadi) >= 4 else 0
+        punteggi["Full"] = 25 if 3 in conteggio_dadi and 2 in conteggio_dadi else 0
+        punteggi["Scala"] = 40 if sorted(set([dado.numero for dado in dadi])) in [list(range(1, 6)), list(range(2, 7))] else 0
+        punteggi["Yahtzee"] = 50 if max(conteggio_dadi) == 5 else 0
 
     return punteggi
 
+# Tabellone con i punteggi definitivi
 tabellone = {}
 def salva_punteggi(colonna, riga, punteggi):
-    if colonna == 1 and riga == 0 :
-        tabellone["Uno"] = punteggi["Uno"]
-    
-    if colonna == 1 and riga == 1 :
-        tabellone["Due"] = punteggi["Due"]
-    
-    if colonna == 1 and riga == 2 :
-        tabellone["Tre"] = punteggi["Tre"]
-    
-    if colonna == 1 and riga == 3 :
-        tabellone["Quattro"] = punteggi["Quattro"]
-    
-    if colonna == 1 and riga == 4 :
-        tabellone["Cinque"] = punteggi["Cinque"]
-    
-    if colonna == 1 and riga == 5 :
-        tabellone["Sei"] = punteggi["Sei"]  
-    
-    if colonna == 1 and riga == 6 :
-        tabellone["Tris"] = punteggi["Tris"]
-    
-    if colonna == 1 and riga == 7 :
-        tabellone["Quadris"] = punteggi["Quadris"]
-    
-    if colonna == 1 and riga == 8 :
-        tabellone["Full"] = punteggi["Full"]
-    
-    if colonna == 1 and riga == 9 :
-        tabellone["Scala"] = punteggi["Scala"]
-    
-    if colonna == 1 and riga == 10 :
-        tabellone["Yahtzee"] = punteggi["Yahtzee"]
-
-    for combinazione in punteggi:
-        if combinazione not in tabellone:  # mantiene solo il valore salvato
-            punteggi[combinazione] = " "
-
+    # Salva i punteggi selezionati nel tabellone
+    if colonna == 1:
+        chiave = combinazioni[riga]
+        tabellone[chiave] = punteggi.get(chiave, 0)
     return tabellone
 
-
+# Calcola il totale dei punti
 def totale(tabellone):
-    totale=0
-    for punteggio in tabellone.values():
-        totale += punteggio
-    
-    return totale
+    return sum(tabellone.values())
+
+
 
 
 #########################################################################################
@@ -344,3 +261,5 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
 # Uscita dal programma
 pygame.quit()
+
+
