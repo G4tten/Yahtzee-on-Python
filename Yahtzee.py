@@ -197,49 +197,30 @@ def calcola_punteggi(dadi):
 
     return punteggi
 
+
 tabellone = {}
 def salva_punteggi(colonna, riga, punteggi):
-    if colonna == 1 and riga == 0 :
-            tabellone["Uno"] = punteggi["Uno"]
-    
-    if colonna == 1 and riga == 1 :
-            tabellone["Due"] = punteggi["Due"]
-    
-    if colonna == 1 and riga == 2 :
-            tabellone["Tre"] = punteggi["Tre"]
-    
-    if colonna == 1 and riga == 3 :
-            tabellone["Quattro"] = punteggi["Quattro"]
-    
-    if colonna == 1 and riga == 4 :
-            tabellone["Cinque"] = punteggi["Cinque"]
-    
-    if colonna == 1 and riga == 5 :
-            tabellone["Sei"] = punteggi["Sei"]  
-    
-    if colonna == 1 and riga == 6 :
-            tabellone["Tris"] = punteggi["Tris"]
-    
-    if colonna == 1 and riga == 7 :
-            tabellone["Quadris"] = punteggi["Quadris"]
-    
-    if colonna == 1 and riga == 8 :
-            tabellone["Full"] = punteggi["Full"]
-    
-    if colonna == 1 and riga == 9 :
-            tabellone["Scala"] = punteggi["Scala"]
-    
-    if colonna == 1 and riga == 10 :
-            tabellone["Yahtzee"] = punteggi["Yahtzee"]
+    #Mappa delle righe per associare il rigo a una chiave del tabellone
+    riga_to_chiave = {
+        0: "Uno", 1: "Due", 2: "Tre", 3: "Quattro", 
+        4: "Cinque", 5: "Sei", 6: "Tris", 7: "Quadris", 
+        8: "Full", 9: "Scala", 10: "Yahtzee"
+    }
 
+    # Controllare che colonna sia valida
+    if colonna == 1 and riga in riga_to_chiave:
+        chiave = riga_to_chiave[riga]
+        
+        # Aggiungere solo se la chiave non è già presente nel tabellone
+        if chiave not in tabellone:
+            tabellone[chiave] = punteggi[chiave]
     
+    # Ripulire le combinazioni non selezionate
     for combinazione in punteggi:
-        if combinazione not in tabellone:  # mantiene solo il valore salvato
+        if combinazione not in tabellone:
             punteggi[combinazione] = " "
 
-
     return tabellone
-
 
 def totale(tabellone):
     totale=0
