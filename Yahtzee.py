@@ -44,11 +44,11 @@ max_tiri = 3  # Numero massimo di tiri consentiti
 
 # Classe per definire il comportamento di un dado
 class Dado:
-    def __init__(self, x_pos, y_pos, num, key):
+    def __init__(self, x_pos, y_pos, num, selezionato):
         self.x_pos = x_pos  # Posizione X del dado
         self.y_pos = y_pos  # Posizione Y del dado
         self.numero = num  # Numero mostrato dal dado
-        self.key = key  # Identificatore unico del dado
+        self.selezionato = selezionato  #controlla se il dado è stato selezionato o no
 
     # Metodo per disegnare il dado sullo schermo
     def draw(self):
@@ -64,17 +64,29 @@ class Dado:
             screen.blit(resize_immagine[4], (self.x_pos, self.y_pos))
         elif self.numero == 6:
             screen.blit(resize_immagine[5], (self.x_pos, self.y_pos))
+        
+        if self.selezionato:
+            bordo_dado = pygame.Rect(self.x_pos, self.y_pos, 100, 100)
+            pygame.draw.rect(screen, bordeaux, bordo_dado, 10)
+
+    def seleziona_dadi(self, pos, dadi):
+        larghezza_dado = 100
+        margine = 20 #margine per ogni dado
+
+        for dado in dadi:
+            if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
+                dado.selezionato = not dado.selezionato
 
     # Metodo per lanciare il dado e generare un nuovo numero casuale
     def lancio_dadi(self):
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(10, 50, 1, 0)
-dado2 = Dado(130, 50, 2, 1)
-dado3 = Dado(250, 50, 3, 2)
-dado4 = Dado(370, 50, 4, 3)
-dado5 = Dado(490, 50, 5, 4)
+dado1 = Dado(10, 50, 1, False)
+dado2 = Dado(130, 50, 2, False)
+dado3 = Dado(250, 50, 3, False)
+dado4 = Dado(370, 50, 4, False)
+dado5 = Dado(490, 50, 5, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
@@ -140,7 +152,7 @@ def rileva_clic(x, y):
     else:
         print('Clic fuori dalla griglia')
         return None, None
-
+            
 # Dizionario per tracciare i punteggi
 punteggi = {}  
 
@@ -298,10 +310,16 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
                 salva_punteggi(colonna, riga, punteggi)  # Salva il punteggio nella cella specificata
                 print(f"Tabellone aggiornato: {tabellone}")
 
+            for dado in dadi:
+                dado.seleziona_dadi((mouse_x, mouse_y), dadi)
+
+            
+
     # Se il tiro è stato effettuato
     if tiro:
         for dado in dadi:
-            dado.lancio_dadi()  # Lancia i dadi
+            if dado.selezionato == False:
+                dado.lancio_dadi()  # Lancia i dadi
         punteggi = calcola_punteggi(dadi)  # Calcola i punteggi in base ai risultati del lancio
         tiro = False  # Reimposta lo stato del tiro per il prossimo turno
 
