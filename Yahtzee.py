@@ -188,41 +188,43 @@ def calcola_punteggi(dadi):
 tabellone = {}
 def salva_punteggi(colonna, riga, punteggi):
     if colonna == 1 and riga == 0 :
-        tabellone["Uno"] = punteggi["Uno"]
+            tabellone["Uno"] = punteggi["Uno"]
     
     if colonna == 1 and riga == 1 :
-        tabellone["Due"] = punteggi["Due"]
+            tabellone["Due"] = punteggi["Due"]
     
     if colonna == 1 and riga == 2 :
-        tabellone["Tre"] = punteggi["Tre"]
+            tabellone["Tre"] = punteggi["Tre"]
     
     if colonna == 1 and riga == 3 :
-        tabellone["Quattro"] = punteggi["Quattro"]
+            tabellone["Quattro"] = punteggi["Quattro"]
     
     if colonna == 1 and riga == 4 :
-        tabellone["Cinque"] = punteggi["Cinque"]
+            tabellone["Cinque"] = punteggi["Cinque"]
     
     if colonna == 1 and riga == 5 :
-        tabellone["Sei"] = punteggi["Sei"]  
+            tabellone["Sei"] = punteggi["Sei"]  
     
     if colonna == 1 and riga == 6 :
-        tabellone["Tris"] = punteggi["Tris"]
+            tabellone["Tris"] = punteggi["Tris"]
     
     if colonna == 1 and riga == 7 :
-        tabellone["Quadris"] = punteggi["Quadris"]
+            tabellone["Quadris"] = punteggi["Quadris"]
     
     if colonna == 1 and riga == 8 :
-        tabellone["Full"] = punteggi["Full"]
+            tabellone["Full"] = punteggi["Full"]
     
     if colonna == 1 and riga == 9 :
-        tabellone["Scala"] = punteggi["Scala"]
+            tabellone["Scala"] = punteggi["Scala"]
     
     if colonna == 1 and riga == 10 :
-        tabellone["Yahtzee"] = punteggi["Yahtzee"]
+            tabellone["Yahtzee"] = punteggi["Yahtzee"]
 
+    
     for combinazione in punteggi:
         if combinazione not in tabellone:  # mantiene solo il valore salvato
             punteggi[combinazione] = " "
+
 
     return tabellone
 
