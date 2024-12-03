@@ -81,11 +81,11 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(10, 50, 1, False)
-dado2 = Dado(130, 50, 2, False)
-dado3 = Dado(250, 50, 3, False)
-dado4 = Dado(370, 50, 4, False)
-dado5 = Dado(490, 50, 5, False)
+dado1 = Dado(10, 50, 6, False)
+dado2 = Dado(130, 50, 6, False)
+dado3 = Dado(250, 50, 6, False)
+dado4 = Dado(370, 50, 6, False)
+dado5 = Dado(490, 50, 6, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
