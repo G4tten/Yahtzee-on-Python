@@ -2,13 +2,14 @@ import random
 import pygame
 
 pygame.init()  # Inizializzazione del modulo Pygame
- 
-# Dimensioni dello schermo di gioco
-# screen_width = 640 
-# screen_height = 480
+
+#Schermo
+info = pygame.display.Info()
+screen_widht = info.current_w
+screen_height = info.current_h
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)  
+screen = pygame.display.set_mode((screen_widht, screen_height), pygame.FULLSCREEN)
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 font = pygame.font.Font('font/casino.ttf', 28)  # Imposta il font per il testo
 
@@ -32,6 +33,12 @@ immagini_dadi = [
     pygame.image.load("immagini/dadi/5.png"), 
     pygame.image.load("immagini/dadi/6.png")
 ]
+
+immagine_QUIT = pygame.image.load("immagini/immagine_x.png")
+immagine_QUIT = pygame.transform.scale(immagine_QUIT, (50, 50))
+
+rect_quit = immagine_QUIT.get_rect()
+rect_quit.topright = (screen_widht - 10, 10) #aggiungi un margine di 10 pixel 
 
 # Ridimensionamento delle immagini dei dadi
 resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
@@ -247,6 +254,9 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     for dado in dadi:
         dado.draw()
 
+    #Disegna x (?)
+    screen.blit(immagine_QUIT, rect_quit)
+
     # Imposta il pulsante "Tira!" o "Tiri finiti" in base al numero di lanci rimanenti
     if counter >= max_tiri:
         tira_btn_colore = dark_orange
@@ -267,12 +277,13 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Gestore degli eventi Pygame
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:  # Se l'utente chiude la finestra
-            run = False
 
         # Gestione dei click del mouse
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
+
+            if rect_quit.collidepoint(event.pos):
+                run=False
             
             # Controlla se il pulsante "Tira!" è stato cliccato e se ci sono tiri disponibili
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
