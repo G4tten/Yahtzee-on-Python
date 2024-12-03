@@ -21,7 +21,6 @@ bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (128, 128, 128)
-
 background = beige  # Colore di sfondo
 
 # Caricamento delle immagini dei dadi
