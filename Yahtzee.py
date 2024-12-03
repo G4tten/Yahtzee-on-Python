@@ -4,11 +4,11 @@ import pygame
 pygame.init()  # Inizializzazione del modulo Pygame
  
 # Dimensioni dello schermo di gioco
-screen_width = 600 
-screen_height = 900 
+# screen_width = 640 
+# screen_height = 480
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((screen_width, screen_height))  
+screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)  
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 font = pygame.font.Font('font/casino.ttf', 28)  # Imposta il font per il testo
 
