@@ -237,6 +237,7 @@ def calcola_punteggi(dadi):
 
 giocatore1= Giocatore("Luigi")
 giocatore2= Giocatore ("Ludovica")
+turno = True
 
 
 #########################################################################################
@@ -297,12 +298,20 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
             if fine_btn.collidepoint(event.pos) and counter == max_tiri:
                 counter = 0  # Resetta il conteggio dei tiri per il prossimo turno
 
-            # Controlla se è stata cliccata una cella del tabellone e salva il punteggio
-            colonna, riga = rileva_clic(mouse_x, mouse_y)
-            if colonna is not None and riga is not None:
-                print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
-                print(f"Tabellone aggiornato: {giocatore1.tabellone}")
+            if turno:
+                # Controlla se è stata cliccata una cella del tabellone e salva il punteggio
+                colonna, riga = rileva_clic(mouse_x, mouse_y)
+                if colonna is not None and riga is not None:
+                    print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                    giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
+                    print(f"Tabellone aggiornato: {giocatore1.tabellone}")
+                else:
+                    colonna, riga = rileva_clic(mouse_x, mouse_y)
+                    if colonna is not None and riga is not None:
+                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                        giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
+                        print(f"Tabellone aggiornato: {giocatore2.tabellone}")
+
 
             for dado in dadi:
                 dado.seleziona_dadi((mouse_x, mouse_y), dadi)
@@ -319,22 +328,42 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Mostra i punteggi sul tabellone
     y_offset = 290  # Posizione iniziale del testo
-    for combinazione, punteggio in punteggi.items():
-        if combinazione in giocatore1.tabellone:
-            # Mostra il punteggio definitivo in nero se confermato nel tabellone
-            testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
-        else:
-            # Mostra il punteggio provvisorio in grigio se non confermato
-            testo_punteggio = font.render(f"{punteggio}", True, gray)
-        
-        screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
-        y_offset += 50  # Spaziatura tra le righe
 
-    # Calcola il totale dei punteggi e lo visualizza sul tabellone
-    totale_punteggi = giocatore1.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
-    totale_text = font.render(f"{totale_punteggi}", True, black)
-    screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
+    if turno:
 
+        for combinazione, punteggio in punteggi.items():
+            if combinazione in giocatore1.tabellone:
+                # Mostra il punteggio definitivo in nero se confermato nel tabellone
+                testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
+            else:
+                # Mostra il punteggio provvisorio in grigio se non confermato
+                testo_punteggio = font.render(f"{punteggio}", True, gray)
+            
+            screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
+            y_offset += 50  # Spaziatura tra le righe
+
+        # Calcola il totale dei punteggi e lo visualizza sul tabellone
+        totale_punteggi = giocatore1.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
+        totale_text = font.render(f"{totale_punteggi}", True, black)
+        screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
+    else:
+        for combinazione, punteggio in punteggi.items():
+            if combinazione in giocatore2.tabellone:
+                # Mostra il punteggio definitivo in nero se confermato nel tabellone
+                testo_punteggio = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
+            else:
+                # Mostra il punteggio provvisorio in grigio se non confermato
+                testo_punteggio = font.render(f"{punteggio}", True, gray)
+            
+            screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
+            y_offset += 50  # Spaziatura tra le righe
+
+        # Calcola il totale dei punteggi e lo visualizza sul tabellone
+        totale_punteggi = giocatore2.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
+        totale_text = font.render(f"{totale_punteggi}", True, black)
+        screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
+
+    turno = not turno
     # Aggiorna lo schermo di gioco
     pygame.display.flip()
 
