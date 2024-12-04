@@ -41,6 +41,38 @@ tiro = False  # Variabile per tracciare se i dadi sono stati tirati
 counter = 0  # Conteggio dei tiri effettuati
 max_tiri = 3  # Numero massimo di tiri consentiti
 
+class Giocatore:
+    def __init__(self, nome):
+        self.nome = nome  # Nome del giocatore
+        self.tabellone = {}  # Tabellone personale
+        self.totale = 0  # Totale punti
+
+    def salva_punteggi(self, riga, punteggi):
+        # Mappa delle righe per associare il rigo a una chiave del tabellone
+        riga_to_chiave = {
+            0: "Uno", 1: "Due", 2: "Tre", 3: "Quattro", 
+            4: "Cinque", 5: "Sei", 6: "Tris", 7: "Quadris", 
+            8: "Full", 9: "Scala", 10: "Yahtzee"
+        }
+
+        # Controllare che la riga sia valida
+        if riga in riga_to_chiave:
+            chiave = riga_to_chiave[riga]
+
+            # Aggiungere solo se la chiave non è già presente nel tabellone
+            if chiave not in self.tabellone:
+                self.tabellone[chiave] = punteggi.get(chiave, 0)  # Preleva il punteggio
+                self.totale += punteggi.get(chiave, 0)  # Aggiorna il totale punti
+            else:
+                print(f"La combinazione '{chiave}' è già stata utilizzata.")
+
+        # Ripulire le combinazioni non selezionate
+        for combinazione in punteggi:
+            if combinazione not in self.tabellone:
+                punteggi[combinazione] = " "
+
+        return self.tabellone
+
 # Classe per definire il comportamento di un dado
 class Dado:
     def __init__(self, x_pos, y_pos, num, selezionato):
@@ -153,8 +185,7 @@ def rileva_clic(x, y):
         return None, None
             
 # Dizionario per tracciare i punteggi
-punteggi = {}  
-
+punteggi = {} 
 # Funzione per calcolare i punteggi basati sui dadi tirati
 def calcola_punteggi(dadi):
     conteggio_dadi = [0] * 6  # Contatore delle occorrenze di ogni numero
@@ -197,36 +228,8 @@ def calcola_punteggi(dadi):
     return punteggi
 
 
-tabellone = {}
-def salva_punteggi(colonna, riga, punteggi):
-    #Mappa delle righe per associare il rigo a una chiave del tabellone
-    riga_to_chiave = {
-        0: "Uno", 1: "Due", 2: "Tre", 3: "Quattro", 
-        4: "Cinque", 5: "Sei", 6: "Tris", 7: "Quadris", 
-        8: "Full", 9: "Scala", 10: "Yahtzee"
-    }
-
-    # Controllare che colonna sia valida
-    if colonna == 1 and riga in riga_to_chiave:
-        chiave = riga_to_chiave[riga]
-        
-        # Aggiungere solo se la chiave non è già presente nel tabellone
-        if chiave not in tabellone:
-            tabellone[chiave] = punteggi[chiave]
-    
-    # Ripulire le combinazioni non selezionate
-    for combinazione in punteggi:
-        if combinazione not in tabellone:
-            punteggi[combinazione] = " "
-
-    return tabellone
-
-def totale(tabellone):
-    totale=0
-    for punteggio in tabellone.values():
-        totale += punteggio
-    
-    return totale
+giocatore1= Giocatore("Luigi")
+giocatore2= Giocatore ("Ludovica")
 
 
 #########################################################################################
@@ -287,8 +290,8 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
             colonna, riga = rileva_clic(mouse_x, mouse_y)
             if colonna is not None and riga is not None:
                 print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                salva_punteggi(colonna, riga, punteggi)  # Salva il punteggio nella cella specificata
-                print(f"Tabellone aggiornato: {tabellone}")
+                Giocatore.salva_punteggi(colonna, riga, punteggi)  # Salva il punteggio nella cella specificata
+                print(f"Tabellone aggiornato: {giocatore1.tabellone}")
 
             for dado in dadi:
                 dado.seleziona_dadi((mouse_x, mouse_y), dadi)
@@ -306,9 +309,9 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     # Mostra i punteggi sul tabellone
     y_offset = 290  # Posizione iniziale del testo
     for combinazione, punteggio in punteggi.items():
-        if combinazione in tabellone:
+        if combinazione in Giocatore.tabellone:
             # Mostra il punteggio definitivo in nero se confermato nel tabellone
-            testo_punteggio = font.render(f"{tabellone[combinazione]}", True, black)
+            testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
         else:
             # Mostra il punteggio provvisorio in grigio se non confermato
             testo_punteggio = font.render(f"{punteggio}", True, gray)
@@ -317,7 +320,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
         y_offset += 50  # Spaziatura tra le righe
 
     # Calcola il totale dei punteggi e lo visualizza sul tabellone
-    totale_punteggi = totale(tabellone)  # Funzione per calcolare il totale nel dizionario `tabellone`
+    totale_punteggi = Giocatore.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
     totale_text = font.render(f"{totale_punteggi}", True, black)
     screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
 
