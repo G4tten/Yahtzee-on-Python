@@ -331,7 +331,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
         y_offset += 50  # Spaziatura tra le righe
 
     # Calcola il totale dei punteggi e lo visualizza sul tabellone
-    totale_punteggi = Giocatore.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
+    totale_punteggi = giocatore1.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
     totale_text = font.render(f"{totale_punteggi}", True, black)
     screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
 
