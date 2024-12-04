@@ -68,8 +68,8 @@ class Giocatore:
 
             # Aggiungere solo se la chiave non è già presente nel tabellone
             if chiave not in self.tabellone:
-                self.tabellone[chiave] = punteggi.get(chiave, 0)  # Preleva il punteggio
-                self.totale += punteggi.get(chiave, 0)  # Aggiorna il totale punti
+                self.tabellone[chiave] = punteggi.get(chiave)  # Preleva il punteggio
+                self.totale += punteggi.get(chiave)  # Aggiorna il totale punti
             else:
                 print(f"La combinazione '{chiave}' è già stata utilizzata.")
 
@@ -301,7 +301,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
             colonna, riga = rileva_clic(mouse_x, mouse_y)
             if colonna is not None and riga is not None:
                 print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                Giocatore.salva_punteggi(colonna, riga, punteggi)  # Salva il punteggio nella cella specificata
+                giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
                 print(f"Tabellone aggiornato: {giocatore1.tabellone}")
 
             for dado in dadi:
@@ -320,7 +320,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     # Mostra i punteggi sul tabellone
     y_offset = 290  # Posizione iniziale del testo
     for combinazione, punteggio in punteggi.items():
-        if combinazione in Giocatore.tabellone:
+        if combinazione in giocatore1.tabellone:
             # Mostra il punteggio definitivo in nero se confermato nel tabellone
             testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
         else:
