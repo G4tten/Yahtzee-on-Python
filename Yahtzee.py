@@ -120,11 +120,11 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(10, 50, 6, False)
-dado2 = Dado(130, 50, 6, False)
-dado3 = Dado(250, 50, 6, False)
-dado4 = Dado(370, 50, 6, False)
-dado5 = Dado(490, 50, 6, False)
+dado1 = Dado(510, 50, 6, False)
+dado2 = Dado(630, 50, 6, False)
+dado3 = Dado(750, 50, 6, False)
+dado4 = Dado(870, 50, 6, False)
+dado5 = Dado(990, 50, 6, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
@@ -168,7 +168,7 @@ def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_i
 larghezza_cella = 150
 altezza_cella = 50
 righe = 12
-colonne = 3
+colonne = 2
 offset_x = 65  # Offset orizzontale della griglia
 offset_y = 280  # Offset verticale della griglia
 
@@ -252,7 +252,8 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     screen.fill(background)
     
     # Disegna la griglia del tabellone
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 100, 280)
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 1200, 280)
 
     # Disegna i dadi sullo schermo
     for dado in dadi:
@@ -271,13 +272,13 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Disegna il pulsante di fine tiri se il numero massimo di lanci è stato raggiunto
     if counter == max_tiri:
-        fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
+        fine_btn = pygame.draw.rect(screen, bordeaux, [750, 265, 160, 50])
 
     # Disegna il pulsante "Tira!" con il colore e testo aggiornati
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50])
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [750, 180, 160, 50])
 
     # Mostra il testo del pulsante "Tira!" sopra il pulsante
-    screen.blit(btn_testo, [155, 190])
+    screen.blit(btn_testo, [760, 190])
 
     # Gestore degli eventi Pygame
     for event in pygame.event.get():
