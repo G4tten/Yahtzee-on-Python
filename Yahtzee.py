@@ -120,11 +120,11 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(510, 50, 6, False)
-dado2 = Dado(630, 50, 6, False)
-dado3 = Dado(750, 50, 6, False)
-dado4 = Dado(870, 50, 6, False)
-dado5 = Dado(990, 50, 6, False)
+dado1 = Dado(10, 50, 6, False)
+dado2 = Dado(130, 50, 6, False)
+dado3 = Dado(250, 50, 6, False)
+dado4 = Dado(370, 50, 6, False)
+dado5 = Dado(490, 50, 6, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
@@ -168,7 +168,7 @@ def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_i
 larghezza_cella = 150
 altezza_cella = 50
 righe = 12
-colonne = 2
+colonne = 3
 offset_x = 65  # Offset orizzontale della griglia
 offset_y = 280  # Offset verticale della griglia
 
@@ -237,7 +237,6 @@ def calcola_punteggi(dadi):
 
 giocatore1= Giocatore("Luigi")
 giocatore2= Giocatore ("Ludovica")
-turno = True
 
 
 #########################################################################################
@@ -252,8 +251,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     screen.fill(background)
     
     # Disegna la griglia del tabellone
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 100, 280)
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 1200, 280)
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
 
     # Disegna i dadi sullo schermo
     for dado in dadi:
@@ -272,13 +270,13 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Disegna il pulsante di fine tiri se il numero massimo di lanci è stato raggiunto
     if counter == max_tiri:
-        fine_btn = pygame.draw.rect(screen, bordeaux, [750, 265, 160, 50])
+        fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
 
     # Disegna il pulsante "Tira!" con il colore e testo aggiornati
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [750, 180, 160, 50])
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50])
 
     # Mostra il testo del pulsante "Tira!" sopra il pulsante
-    screen.blit(btn_testo, [760, 190])
+    screen.blit(btn_testo, [155, 190])
 
     # Gestore degli eventi Pygame
     for event in pygame.event.get():
@@ -299,20 +297,12 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
             if fine_btn.collidepoint(event.pos) and counter == max_tiri:
                 counter = 0  # Resetta il conteggio dei tiri per il prossimo turno
 
-            if turno:
-                # Controlla se è stata cliccata una cella del tabellone e salva il punteggio
-                colonna, riga = rileva_clic(mouse_x, mouse_y)
-                if colonna is not None and riga is not None:
-                    print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                    giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
-                    print(f"Tabellone aggiornato: {giocatore1.tabellone}")
-                else:
-                    colonna, riga = rileva_clic(mouse_x, mouse_y)
-                    if colonna is not None and riga is not None:
-                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
-                        print(f"Tabellone aggiornato: {giocatore2.tabellone}")
-
+            # Controlla se è stata cliccata una cella del tabellone e salva il punteggio
+            colonna, riga = rileva_clic(mouse_x, mouse_y)
+            if colonna is not None and riga is not None:
+                print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio nella cella specificata
+                print(f"Tabellone aggiornato: {giocatore1.tabellone}")
 
             for dado in dadi:
                 dado.seleziona_dadi((mouse_x, mouse_y), dadi)
@@ -329,42 +319,22 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Mostra i punteggi sul tabellone
     y_offset = 290  # Posizione iniziale del testo
+    for combinazione, punteggio in punteggi.items():
+        if combinazione in giocatore1.tabellone:
+            # Mostra il punteggio definitivo in nero se confermato nel tabellone
+            testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
+        else:
+            # Mostra il punteggio provvisorio in grigio se non confermato
+            testo_punteggio = font.render(f"{punteggio}", True, gray)
+        
+        screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
+        y_offset += 50  # Spaziatura tra le righe
 
-    if turno:
+    # Calcola il totale dei punteggi e lo visualizza sul tabellone
+    totale_punteggi = giocatore1.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
+    totale_text = font.render(f"{totale_punteggi}", True, black)
+    screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
 
-        for combinazione, punteggio in punteggi.items():
-            if combinazione in giocatore1.tabellone:
-                # Mostra il punteggio definitivo in nero se confermato nel tabellone
-                testo_punteggio = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
-            else:
-                # Mostra il punteggio provvisorio in grigio se non confermato
-                testo_punteggio = font.render(f"{punteggio}", True, gray)
-            
-            screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
-            y_offset += 50  # Spaziatura tra le righe
-
-        # Calcola il totale dei punteggi e lo visualizza sul tabellone
-        totale_punteggi = giocatore1.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
-        totale_text = font.render(f"{totale_punteggi}", True, black)
-        screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
-    else:
-        for combinazione, punteggio in punteggi.items():
-            if combinazione in giocatore2.tabellone:
-                # Mostra il punteggio definitivo in nero se confermato nel tabellone
-                testo_punteggio = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
-            else:
-                # Mostra il punteggio provvisorio in grigio se non confermato
-                testo_punteggio = font.render(f"{punteggio}", True, gray)
-            
-            screen.blit(testo_punteggio, (280, y_offset))  # Visualizza il punteggio sulla griglia
-            y_offset += 50  # Spaziatura tra le righe
-
-        # Calcola il totale dei punteggi e lo visualizza sul tabellone
-        totale_punteggi = giocatore2.totale  # Funzione per calcolare il totale nel dizionario `tabellone`
-        totale_text = font.render(f"{totale_punteggi}", True, black)
-        screen.blit(totale_text, (280, y_offset))  # Visualizza il totale dei punti
-
-    turno = not turno
     # Aggiorna lo schermo di gioco
     pygame.display.flip()
 
