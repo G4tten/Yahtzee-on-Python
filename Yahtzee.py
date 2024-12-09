@@ -37,9 +37,17 @@ immagini_dadi = [
     pygame.image.load("immagini/dadi/6.png")
 ]
 
+#Caricamento delle immagini dei tiri
+immagini_tiri = [
+    pygame.image.load("immagini/tiri/tiro_non_fatto.png"),
+    pygame.image.load("immagini/tiri/tiro_fatto.png")
+]
+
+check_tiro = [False, False, False]
+
 # Ridimensionamento delle immagini dei dadi
 resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
-size_immagine = [img.get_size() for img in resize_immagine]  # Ottieni le dimensioni ridimensionate
+resize_immagine_t = [pygame.transform.scale(img, (30,30)) for img in immagini_tiri]
 
 tiro = False  # Variabile per tracciare se i dadi sono stati tirati
 counter = 0  # Conteggio dei tiri effettuati
@@ -226,6 +234,17 @@ def calcola_punteggi(dadi):
 
     return punteggi
 
+def aggiorna_tiri(check_tiro):
+    x_base = 740
+    y = 680
+
+    for i in range(len(check_tiro)):
+        x = x_base + i * 70
+
+        if check_tiro[i]:
+            screen.blit(resize_immagine_t[1], (x,y))
+        else:
+            screen.blit(resize_immagine_t[0], (x,y))
 
 giocatore1= Giocatore("Luigi")
 giocatore2= Giocatore ("Ludovica")
@@ -261,6 +280,8 @@ while run:
     # Disegna i dadi sullo schermo
     for dado in dadi:
         dado.draw()
+
+    aggiorna_tiri(check_tiro)
     
     # 5. Impostazione del pulsante "Tira!" o "Tiri finiti"
     if counter == max_tiri:
@@ -290,6 +311,8 @@ while run:
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True  # Avvia il tiro dei dadi
                 counter += 1  # Incrementa il numero di tiri
+                check_tiro[counter - 1] = True
+                aggiorna_tiri(check_tiro)
                 # Lancia i dadi non selezionati
                 for dado in dadi:
                     if not dado.selezionato:
@@ -313,6 +336,8 @@ while run:
                     giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio
                     turno = not turno
                     counter=0
+                    check_tiro = [False, False, False]
+                    aggiorna_tiri(check_tiro)
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
@@ -324,6 +349,8 @@ while run:
                     giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio
                     turno = not turno
                     counter= 0
+                    check_tiro = [False, False, False]
+                    aggiorna_tiri(check_tiro)
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
