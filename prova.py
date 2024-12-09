@@ -5,24 +5,27 @@ pygame.init()  # Inizializzazione del modulo Pygame
 
 #Schermo
 info = pygame.display.Info()
-screen_widht = 600
-screen_height = info.current_h - 100
+screen_widht = 1200
+screen_height = 750
 
 # Creazione della finestra di gioco
 screen = pygame.display.set_mode((screen_widht, screen_height))
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
-font = pygame.font.Font('font/casino.ttf', 28)  # Imposta il font per il testo
+font = pygame.font.Font('font/VCR_OSD_MONO_1.001.ttf', 28)  # Imposta il font per il testo
+font_turno = pygame.font.Font('font/Daydream.ttf', 35)
+font_tira = pygame.font.Font('font/Daydream.ttf', 28)
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
 beige = (242, 229, 191)
-orange = (253, 139, 81)
-dark_orange = (180, 100, 50)
+dark_beige = (194, 183, 153)
+# orange = (253, 139, 81)
+# dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (128, 128, 128)
-background = beige  # Colore di sfondo
+# background = beige  # Colore di sfondo
 
 # Caricamento delle immagini dei dadi
 immagini_dadi = [
@@ -33,12 +36,6 @@ immagini_dadi = [
     pygame.image.load("immagini/dadi/5.png"), 
     pygame.image.load("immagini/dadi/6.png")
 ]
-
-immagine_QUIT = pygame.image.load("immagini/immagine_x.png")
-immagine_QUIT = pygame.transform.scale(immagine_QUIT, (50, 50))
-
-rect_quit = immagine_QUIT.get_rect()
-rect_quit.topright = (screen_widht - 10, 10) #aggiungi un margine di 10 pixel 
 
 # Ridimensionamento delle immagini dei dadi
 resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
@@ -105,7 +102,7 @@ class Dado:
         
         if self.selezionato:
             bordo_dado = pygame.Rect(self.x_pos, self.y_pos, 100, 100)
-            pygame.draw.rect(screen, bordeaux, bordo_dado, 10)
+            pygame.draw.rect(screen, beige, bordo_dado, 10)
 
     def seleziona_dadi(self, pos, dadi):
         larghezza_dado = 100
@@ -120,18 +117,13 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(10, 50, 6, False)
-dado2 = Dado(130, 50, 6, False)
-dado3 = Dado(250, 50, 6, False)
-dado4 = Dado(370, 50, 6, False)
-dado5 = Dado(490, 50, 6, False)
+dado1 = Dado(550, 350, 6, False)
+dado2 = Dado(670, 350, 6, False)
+dado3 = Dado(790, 350, 6, False)
+dado4 = Dado(910, 350, 6, False)
+dado5 = Dado(1030, 350, 6, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
-
-btn_testo = font.render("Tira!", True, white)  # Testo per il pulsante "Tira!"
-
-fine_btn = pygame.draw.rect(screen, bordeaux, [300, 180, 280, 50])  # Pulsante "Fine Tiri"
-tira_btn_colore = orange  # Colore iniziale del pulsante "Tira!"
 
 # Lista delle combinazioni visualizzate nel tabellone
 combinazioni = [
@@ -170,7 +162,7 @@ altezza_cella = 50
 righe = 12
 colonne = 3
 offset_x = 65  # Offset orizzontale della griglia
-offset_y = 280  # Offset verticale della griglia
+offset_y = 100  # Offset verticale della griglia
 
 # Funzione per rilevare il click sulla griglia
 def rileva_clic(x, y):
@@ -251,40 +243,121 @@ pygame.mixer.music.play(-1, 0.0)  # Riproduce la musica in loop
 pygame.mixer.music.set_volume(0.3)
 
 suono_roll= pygame.mixer.Sound("suoni/rolls.mp3")
+
+# Aggiungi questa funzione per creare caselle di input
+class InputBox:
+    def __init__(self, x, y, w, h, font, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = pygame.Color('gray')
+        self.text = text
+        self.font = font
+        self.txt_surface = font.render(text, True, pygame.Color('black'))
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Controlla se il mouse è sopra la casella
+            self.active = self.rect.collidepoint(event.pos)
+            self.color = pygame.Color('dodgerblue') if self.active else pygame.Color('gray')
+        if event.type == pygame.KEYDOWN and self.active:
+            if event.key == pygame.K_RETURN:
+                pass  # Premi INVIO per confermare
+            elif event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]
+            else:
+                self.text += event.unicode
+            self.txt_surface = self.font.render(self.text, True, pygame.Color('black'))
+
+    def draw(self, screen):
+        # Disegna il testo e la casella
+        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+
+# Configura la finestra
+screen = pygame.display.set_mode((1200,750))
+font = pygame.font.Font(None, 50)
+
+# Variabili del menu
+nome_giocatore1 = InputBox(300, 200, 400, 50, font)
+nome_giocatore2 = InputBox(300, 300, 400, 50, font)
+pulsante_inizia = pygame.Rect(400, 400, 200, 50)
+menu_attivo = True
+stato_gioco = "menu"
+clock = pygame.time.Clock()
+
+# Ciclo principale
+while menu_attivo:
+    screen.fill((173, 216, 230))  # Colore sfondo (azzurro chiaro)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            menu_attivo = False
+            run = False  # Esci dal gioco
+
+        nome_giocatore1.handle_event(event)
+        nome_giocatore2.handle_event(event)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pulsante_inizia.collidepoint(event.pos):
+                # Passa al gioco solo se i nomi sono inseriti
+                if nome_giocatore1.text and nome_giocatore2.text:
+                    giocatore1_nome = nome_giocatore1.text
+                    giocatore2_nome = nome_giocatore2.text
+                    stato_gioco = "giocando"
+                    menu_attivo = False
+
+    # Disegna gli elementi del menu
+    titolo = font.render("Inserisci i nomi dei giocatori", True, pygame.Color('black'))
+    screen.blit(titolo, (250, 100))
+
+    nome_giocatore1.draw(screen)
+    nome_giocatore2.draw(screen)
+
+    pygame.draw.rect(screen, pygame.Color('green'), pulsante_inizia)
+    testo_pulsante = font.render("Inizia", True, pygame.Color('white'))
+    screen.blit(testo_pulsante, (450, 410))
+
+    # Aggiorna lo schermo
+    pygame.display.flip()
+    clock.tick(30)
+
+
+
 # Ciclo principale del gioco (game loop)
 while run:
 
+
     
     # 1. Aggiornamento dello sfondo
-    screen.fill(background)
+    if turno:
+        screen.fill(teal)
+    else:
+        screen.fill(bordeaux)
     
-    # 2. Disegno della griglia del tabellone
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
-    
-    # 3. Disegno dei dadi sullo schermo
+    # Disegna la griglia del tabellone
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
+
+    # Disegna i dadi sullo schermo
     for dado in dadi:
         dado.draw()
     
-    # 4. Disegno del pulsante "Quit"
-    screen.blit(immagine_QUIT, rect_quit)
-    
     # 5. Impostazione del pulsante "Tira!" o "Tiri finiti"
-    if counter >= max_tiri:
-        tira_btn_colore = dark_orange
-        btn_testo = font.render("Tiri finiti", True, white)
-    else:
-        tira_btn_colore = orange
-        btn_testo = font.render("Tira!", True, white)
-
-    # 6. Disegno del pulsante "Fine Tiri" se il numero massimo di tiri è stato raggiunto
     if counter == max_tiri:
-        fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
-    
-    # 7. Disegno del pulsante "Tira!" con colore e testo aggiornati
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50])
-    screen.blit(btn_testo, [155, 190])
-    
-    # Gestione degli eventi Pygame
+        tira_btn_colore = dark_beige
+        btn_testo = font_tira.render("Tiri finiti", True, gray) #gray, white o più chiaro lo sfondo?
+        btn_pos = [705, 580]
+    else:
+        tira_btn_colore = beige
+        btn_testo = font_tira.render("Tira!", True, gray)
+        btn_pos = [760, 580]
+
+    # Disegna il pulsante "Tira!" con il colore e testo aggiornati
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100])
+
+    # Mostra il testo del pulsante "Tira!" sopra il pulsante
+    screen.blit(btn_testo, btn_pos)
+
+    # Gestore degli eventi Pygame
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False  # Esci dal gioco se viene chiusa la finestra
@@ -292,11 +365,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             
-            # 8. Controllo se il pulsante "Quit" è stato cliccato
-            if rect_quit.collidepoint(event.pos):
-                run = False  # Esci dal gioco
-            
-            # 9. Controllo se il pulsante "Tira!" è stato cliccato
+            # 8. Controllo se il pulsante "Tira!" è stato cliccato
             if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                 tiro = True  # Avvia il tiro dei dadi
                 counter += 1  # Incrementa il numero di tiri
@@ -309,21 +378,12 @@ while run:
                 # Calcola i punteggi dopo il lancio
                 punteggi = calcola_punteggi(dadi)
             
-            # 10. Controllo se il pulsante "Fine Tiri" è stato cliccato
-            if fine_btn.collidepoint(event.pos) and counter == max_tiri:
-                counter = 0  # Resetta il conteggio dei tiri
-                turno = not turno  # Cambia il turno del giocatore
-
-                # Resetta i dadi (non selezionati e valore a uno)
+            # 10. Gestione della selezione dei dadi
+            if tiro:
                 for dado in dadi:
-                    dado.selezionato = False
-                    dado.numero = 6
-            
-            # 11. Gestione della selezione dei dadi
-            for dado in dadi:
-                dado.seleziona_dadi((mouse_x, mouse_y), dadi)
+                    dado.seleziona_dadi((mouse_x, mouse_y), dadi)
 
-            # 12. Controllo se è stata cliccata una cella del tabellone
+            # 11. Controllo se è stata cliccata una cella del tabellone
             colonna, riga = rileva_clic(mouse_x, mouse_y)
             
             if turno:
@@ -335,6 +395,7 @@ while run:
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
+                        tiro= False       
                     print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
             else:
                 if colonna is not None and riga is not None:
@@ -345,19 +406,20 @@ while run:
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
+                        tiro= False
                     print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
     
     #scritta del turno corrente
     if turno:
-        testo_giocatore1= font.render (f"Turno giocatore 1", True, black)
-        screen.blit(testo_giocatore1, (18,20))
+        testo_giocatore1= font_turno.render (f"Turno Giocatore 1", True, white)
+        screen.blit(testo_giocatore1, (550,200))
     else:
-        testo_giocatore2= font.render (f"Turno giocatore 2", True, black)
-        screen.blit(testo_giocatore2, (18,20))
+        testo_giocatore2= font_turno.render (f"Turno giocatore 2", True, white)
+        screen.blit(testo_giocatore2, (550,200))
     
-    # 13. Mostra i punteggi sul tabellone per entrambi i giocatori
-    y1_offset = 290
-    y2_offset = 290
+    # 12. Mostra i punteggi sul tabellone per entrambi i giocatori
+    y1_offset = 110
+    y2_offset = 110
     x_pos1 = 280
     x_pos2 = 430
 
@@ -395,21 +457,14 @@ while run:
                 screen.blit(testo_punteggio1, (x_pos1, y1_offset))
             y1_offset += 50
 
-
-
     # Calcola e mostra il totale dei punteggi
     totale_punteggi1 = giocatore1.totale
     totale_text1 = font.render(f"{totale_punteggi1}", True, black)
-    screen.blit(totale_text1, (x_pos1, 840))
+    screen.blit(totale_text1, (x_pos1, 660))
 
     totale_punteggi2 = giocatore2.totale
     totale_text2 = font.render(f"{totale_punteggi2}", True, black)
-    screen.blit(totale_text2, (x_pos2, 840))
-
-
-
-    
-
+    screen.blit(totale_text2, (x_pos2, 660))
     
     # Aggiornamento dello schermo di gioco
     pygame.display.flip()

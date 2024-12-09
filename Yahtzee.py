@@ -117,11 +117,11 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(550, 350, 1, False)
-dado2 = Dado(670, 350, 1, False)
-dado3 = Dado(790, 350, 1, False)
-dado4 = Dado(910, 350, 1, False)
-dado5 = Dado(1030, 350, 1, False)
+dado1 = Dado(550, 350, 6, False)
+dado2 = Dado(670, 350, 6, False)
+dado3 = Dado(790, 350, 6, False)
+dado4 = Dado(910, 350, 6, False)
+dado5 = Dado(1030, 350, 6, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
@@ -243,8 +243,10 @@ pygame.mixer.music.play(-1, 0.0)  # Riproduce la musica in loop
 pygame.mixer.music.set_volume(0.3)
 
 suono_roll= pygame.mixer.Sound("suoni/rolls.mp3")
+
 # Ciclo principale del gioco (game loop)
 while run:
+
 
     
     # 1. Aggiornamento dello sfondo
@@ -298,8 +300,9 @@ while run:
                 punteggi = calcola_punteggi(dadi)
             
             # 10. Gestione della selezione dei dadi
-            for dado in dadi:
-                dado.seleziona_dadi((mouse_x, mouse_y), dadi)
+            if tiro:
+                for dado in dadi:
+                    dado.seleziona_dadi((mouse_x, mouse_y), dadi)
 
             # 11. Controllo se è stata cliccata una cella del tabellone
             colonna, riga = rileva_clic(mouse_x, mouse_y)
@@ -313,6 +316,7 @@ while run:
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
+                        tiro= False       
                     print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
             else:
                 if colonna is not None and riga is not None:
@@ -323,6 +327,7 @@ while run:
                     for dado in dadi:
                         dado.selezionato = False
                         dado.numero = 6
+                        tiro= False
                     print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
     
     #scritta del turno corrente
