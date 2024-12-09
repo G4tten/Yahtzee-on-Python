@@ -85,6 +85,11 @@ class Giocatore:
 
         return self.tabellone
 
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_select.set_volume(0.3)
+suono_deselect.set_volume(0.3)
+
 # Classe per definire il comportamento di un dado
 class Dado:
     def __init__(self, x_pos, y_pos, num, selezionato):
@@ -118,6 +123,10 @@ class Dado:
 
         for dado in dadi:
             if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
+                if not dado.selezionato:
+                    suono_select.play()
+                else:
+                    suono_deselect.play()
                 dado.selezionato = not dado.selezionato
 
     # Metodo per lanciare il dado e generare un nuovo numero casuale
