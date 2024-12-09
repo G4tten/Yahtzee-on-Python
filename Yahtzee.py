@@ -5,13 +5,13 @@ pygame.init()  # Inizializzazione del modulo Pygame
 
 #Schermo
 info = pygame.display.Info()
-screen_widht = info.current_w
-screen_height = info.current_h
+screen_widht = 1200
+screen_height = 750
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((screen_widht, screen_height), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((screen_widht, screen_height))
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
-font = pygame.font.Font('font/casino.ttf', 28)  # Imposta il font per il testo
+font = pygame.font.Font('font/VCR_OSD_MONO_1.001.ttf', 28)  # Imposta il font per il testo
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
@@ -120,11 +120,11 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(10, 50, 6, False)
-dado2 = Dado(130, 50, 6, False)
-dado3 = Dado(250, 50, 6, False)
-dado4 = Dado(370, 50, 6, False)
-dado5 = Dado(490, 50, 6, False)
+dado1 = Dado(550, 350, 1, False)
+dado2 = Dado(670, 350, 1, False)
+dado3 = Dado(790, 350, 1, False)
+dado4 = Dado(910, 350, 1, False)
+dado5 = Dado(1030, 350, 1, False)
 
 dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
 
@@ -251,7 +251,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
     screen.fill(background)
     
     # Disegna la griglia del tabellone
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 280)
+    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
 
     # Disegna i dadi sullo schermo
     for dado in dadi:
@@ -270,13 +270,13 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
 
     # Disegna il pulsante di fine tiri se il numero massimo di lanci è stato raggiunto
     if counter == max_tiri:
-        fine_btn = pygame.draw.rect(screen, bordeaux, [330, 180, 160, 50])
+        fine_btn = pygame.draw.rect(screen, bordeaux, [1050, 400, 160, 50])
 
     # Disegna il pulsante "Tira!" con il colore e testo aggiornati
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [150, 180, 160, 50])
+    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100])
 
     # Mostra il testo del pulsante "Tira!" sopra il pulsante
-    screen.blit(btn_testo, [155, 190])
+    screen.blit(btn_testo, [705, 555])
 
     # Gestore degli eventi Pygame
     for event in pygame.event.get():
@@ -318,7 +318,7 @@ while run:  # Inizio del ciclo principale del gioco (game loop)
         tiro = False  # Reimposta lo stato del tiro per il prossimo turno
 
     # Mostra i punteggi sul tabellone
-    y_offset = 290  # Posizione iniziale del testo
+    y_offset = 115  # Posizione iniziale del testo
     for combinazione, punteggio in punteggi.items():
         if combinazione in giocatore1.tabellone:
             # Mostra il punteggio definitivo in nero se confermato nel tabellone
