@@ -11,9 +11,9 @@ screen_height = 750
 # Creazione della finestra di gioco
 screen = pygame.display.set_mode((screen_widht, screen_height))
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
-font = pygame.font.Font('font/VCR_OSD_MONO_1.001.ttf', 28)  # Imposta il font per il testo
-font_turno = pygame.font.Font('font/Daydream.ttf', 35)
-font_tira = pygame.font.Font('font/Daydream.ttf', 28)
+font = pygame.font.Font('font/Casino.ttf', 28)  # Imposta il font per il testo
+font_turno = pygame.font.Font('font/Casino.ttf',90)
+font_tira = pygame.font.Font('font/Casino.ttf', 60)
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
@@ -256,8 +256,8 @@ giocatore2= Giocatore ("")
 input_attivo1 = False  # Campo attivo per Giocatore 1
 input_attivo2 = False  # Campo attivo per Giocatore 2
 
-# pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
-# pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
+pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
+pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
 pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
 suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
@@ -293,13 +293,13 @@ while run:
         screen.blit(sfondo, (0, 0))
 
         # Titolo
-        font_grande = pygame.font.Font("font/VCR_OSD_MONO_1.001.ttf", 100)  # Imposta la dimensione del font a 100
-        title_text = font_grande.render("Yatzee", True, white)
+        font_grande = pygame.font.Font("font/Casino.ttf", 100)  # Imposta la dimensione del font a 100
+        title_text = font_grande.render("YAHTZEE", True, white)
         screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
 
         # Istruzione
-        instruction_text = font.render("Inserisci giocatori:", True, white)
-        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 180))
+        instruction_text = font.render("INSERISCI GIOCATORI", True, white)
+        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 200))
 
         # Rettangoli per i campi di input e il pulsante Play
         rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2 , 250 , 300, 60)
@@ -321,7 +321,7 @@ while run:
         
         # Disegna il pulsante Play
         pygame.draw.rect(screen, teal, rect_play, 0, 8)
-        play_text = font.render("Play", True, white)
+        play_text = font.render("PLAY", True, white)
         screen.blit(play_text, (rect_play.x + 15, rect_play.y + 10))
 
             # Gestione degli eventi
@@ -452,10 +452,10 @@ while run:
         
         # Mostra il turno corrente sullo schermo
         if turno:
-            testo_giocatore1 = font_turno.render(f"Turno di : {giocatore1.nome}", True, white)
+            testo_giocatore1 = font_turno.render(f"TURNO DI  {giocatore1.nome}", True, white)
             screen.blit(testo_giocatore1, (550, 200))  # Testo per il Giocatore 1
         else:
-            testo_giocatore2 = font_turno.render(f"Turno di : {giocatore2.nome}", True, white)
+            testo_giocatore2 = font_turno.render(f"TURNO DI {giocatore2.nome}", True, white)
             screen.blit(testo_giocatore2, (550, 200))  # Testo per il Giocatore 2
         
         # Mostra i punteggi sul tabellone per entrambi i giocatori
