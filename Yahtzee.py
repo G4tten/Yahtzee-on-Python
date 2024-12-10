@@ -256,8 +256,8 @@ giocatore2= Giocatore ("")
 input_attivo1 = False  # Campo attivo per Giocatore 1
 input_attivo2 = False  # Campo attivo per Giocatore 2
 
-pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
-pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
+# pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
+# pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
 pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
 suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
@@ -269,11 +269,11 @@ while run:
 
         if giocatore1.totale > giocatore2.totale:
             screen.fill(teal)
-            vittoria = font_turno.render("Giocatore 1, hai vinto ! !", True, white)
+            vittoria = font_turno.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         elif giocatore2.totale > giocatore1.totale:
             screen.fill(bordeaux)
-            vittoria = font_turno.render("Giocatore 2, hai vinto ! !", True, white)
+            vittoria = font_turno.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         else:
             screen.fill(beige)
