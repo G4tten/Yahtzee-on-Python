@@ -288,7 +288,8 @@ while run:
     
     if schermata== "menu" :
 
-        sfondo = pygame.image.load("immagini/Sfondo.png")
+
+        sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
         # Titolo
