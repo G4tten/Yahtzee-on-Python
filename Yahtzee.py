@@ -85,6 +85,11 @@ class Giocatore:
 
         return self.tabellone
 
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_select.set_volume(0.3)
+suono_deselect.set_volume(0.3)
+
 # Classe per definire il comportamento di un dado
 class Dado:
     def __init__(self, x_pos, y_pos, num, selezionato):
@@ -95,18 +100,7 @@ class Dado:
 
     # Metodo per disegnare il dado sullo schermo
     def draw(self):
-        if self.numero == 1:
-            screen.blit(resize_immagine[0], (self.x_pos, self.y_pos))
-        elif self.numero == 2:
-            screen.blit(resize_immagine[1], (self.x_pos, self.y_pos))
-        elif self.numero == 3:
-            screen.blit(resize_immagine[2], (self.x_pos, self.y_pos))
-        elif self.numero == 4:
-            screen.blit(resize_immagine[3], (self.x_pos, self.y_pos))
-        elif self.numero == 5:
-            screen.blit(resize_immagine[4], (self.x_pos, self.y_pos))
-        elif self.numero == 6:
-            screen.blit(resize_immagine[5], (self.x_pos, self.y_pos))
+        screen.blit(resize_immagine[self.numero - 1], (self.x_pos, self.y_pos))
         
         if self.selezionato:
             bordo_dado = pygame.Rect(self.x_pos, self.y_pos, 100, 100)
@@ -118,6 +112,10 @@ class Dado:
 
         for dado in dadi:
             if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
+                if not dado.selezionato:
+                    suono_select.play()
+                else:
+                    suono_deselect.play()
                 dado.selezionato = not dado.selezionato
 
     # Metodo per lanciare il dado e generare un nuovo numero casuale
@@ -125,13 +123,7 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(550, 350, 6, False)
-dado2 = Dado(670, 350, 6, False)
-dado3 = Dado(790, 350, 6, False)
-dado4 = Dado(910, 350, 6, False)
-dado5 = Dado(1030, 350, 6, False)
-
-dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
+dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)] 
 
 # Lista delle combinazioni visualizzate nel tabellone
 combinazioni = [
@@ -248,7 +240,6 @@ def aggiorna_tiri(check_tiro):
 
 
 
-
 #########################################################################################
 # Inizializzazione delle variabili di gioco
 run = True  # Variabile per mantenere attivo il ciclo di gioco
@@ -273,6 +264,27 @@ suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per 
 
 # Ciclo principale del gioco (game loop)
 while run:
+
+    if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
+
+        if giocatore1.totale > giocatore2.totale:
+            screen.fill(teal)
+            vittoria = font_turno.render("Giocatore 1, hai vinto ! !", True, white)
+            screen.blit(vittoria, (300,350))
+        elif giocatore2.totale > giocatore1.totale:
+            screen.fill(bordeaux)
+            vittoria = font_turno.render("Giocatore 2, hai vinto ! !", True, white)
+            screen.blit(vittoria, (300,350))
+        else:
+            screen.fill(beige)
+            vittoria = font_turno.render("Pareggio ! : (", True, gray)
+            screen.blit(vittoria, (400,350))
+
+        pygame.display.flip()
+        pygame.time.wait(5000)
+
+        run = False
+        break
     
     if schermata== "menu" :
 
