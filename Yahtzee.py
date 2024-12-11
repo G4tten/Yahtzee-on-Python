@@ -291,8 +291,8 @@ while run:
         run = False
         break
     
-    if schermata== "menu" :
 
+    if schermata== "menu" :
 
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
@@ -303,9 +303,17 @@ while run:
 
         # Rettangoli per i campi di input e il pulsante Play
         rect_contenitore = pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
+        rect_bordocontenitore= pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
         rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
         rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
+        rect_bordo1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
+        rect_bordo2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
         rect_play = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_bordoplay = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_opzioni = pygame.Rect (680,455,120,50)
+        rect_bordopzioni = pygame.Rect (680,455,120,50)
+        rect_regole= pygame.Rect (400,455,120,50)
+        rect_bordoregole= pygame.Rect (400,455,120,50)
 
         # Colori
         color_giocatore1 = teal if input_attivo1 else white
@@ -314,34 +322,52 @@ while run:
 
         # Disegna il rettangolo trasparente sulla superficie
         pygame.draw.rect(surface, color_contenitore, rect_contenitore, 0, 8)
+        pygame.draw.rect(surface, black, rect_bordocontenitore,5,8)
 
         # Blitta la superficie trasparente sullo schermo
         screen.blit(surface, (0, 0))
 
-        # Disegna gli altri rettangoli direttamente sullo schermo
+        # rettangoli per inserimento nomi
         pygame.draw.rect(screen, color_giocatore1, rect_giocatore1, 0, 8)
         pygame.draw.rect(screen, color_giocatore2, rect_giocatore2, 0, 8)
+        pygame.draw.rect(screen, black, rect_bordo1, 5, 8)
+        pygame.draw.rect(screen, black, rect_bordo2, 5, 8)
 
-        # Disegna il titolo
+
+        # titolo
         font_grande = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 100
         title_text = font_grande.render("YAHTZEE", True, white)
         screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
 
-        # Inserimento dei nomi sottotitolo
+        # sottotitolo
         instruction_text = font.render("INSERISCI GIOCATORI:", True, black)
         screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 230))
 
-        # Disegna il testo nei campi di input
+        # testo nei campi di input
         text_giocatore1 = font.render(giocatore1.nome, True, black)
-        screen.blit(text_giocatore1, (rect_giocatore1.x + 18, rect_giocatore1.y + 15))
+        screen.blit(text_giocatore1, (rect_giocatore1.x + 18, rect_giocatore1.y + 18))
 
         text_giocatore2 = font.render(giocatore2.nome, True, black)
-        screen.blit(text_giocatore2, (rect_giocatore2.x + 18, rect_giocatore2.y + 15))
+        screen.blit(text_giocatore2, (rect_giocatore2.x + 18, rect_giocatore2.y + 18))
         
-        # Disegna il pulsante Play
+        # pulsante Play
         pygame.draw.rect(screen, teal, rect_play, 0, 8)
+        pygame.draw.rect(screen, black, rect_bordoplay, 5, 8)
         play_text = font.render("PLAY", True, white)
-        screen.blit(play_text, (rect_play.x + 30, rect_play.y + 20))
+        screen.blit(play_text, (rect_play.x + 30, rect_play.y + 20)) 
+
+        # pulsante opzioni   
+        pygame.draw.rect(screen, bordeaux, rect_opzioni,0,8)
+        pygame.draw.rect(screen, black, rect_bordopzioni, 5, 8)
+        opzioni_text= font.render("OPZIONI", True, white)
+        screen.blit(opzioni_text, (rect_opzioni.x + 15, rect_opzioni.y + 13)) 
+
+        # pulsante regole
+        pygame.draw.rect(screen, bordeaux, rect_regole,0,8)
+        pygame.draw.rect(screen, black, rect_bordoregole, 5, 8)
+        regole_text= font.render("REGOLE", True, white)
+        screen.blit(regole_text, (rect_regole.x + 15, rect_regole.y + 13)) 
+
 
         # Gestione degli eventi
         for event in pygame.event.get():
@@ -360,9 +386,14 @@ while run:
                     schermata = "gioco"
                     suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
                     suono_inizio.play()
+                elif rect_opzioni.collidepoint(event.pos):
+                    schermata = "opzioni"
+                elif rect_regole.collidepoint(event.pos):
+                    schermata = "regole"
                 else:
                     input_attivo1 = False
                     input_attivo2 = False
+                
 
             if event.type == pygame.KEYDOWN:
                 # Scrittura nel campo attivo
@@ -390,14 +421,36 @@ while run:
         # Aggiorna la finestra
         pygame.display.flip()
     
+    
     elif schermata == "opzioni":
         
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-
+        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
+        rect_indietro= pygame.Rect((screen_widht-120)//2,550,120,50)
         
+
+        pygame.draw.rect(screen, white, rect_contenitore2,0,8)
+        pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
+        pygame.draw.rect(screen, teal ,rect_indietro,0,8 )
+
+        # Gestione degli eventi
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if rect_indietro.collidepoint(event.pos):
+                    schermata = "menu"
+
+
+
+        pygame.display.flip()
+
+
 
 
     elif schermata == "gioco" : 

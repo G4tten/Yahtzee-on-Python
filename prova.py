@@ -11,14 +11,16 @@ screen_height = 750
 # Creazione della finestra di gioco
 screen = pygame.display.set_mode((screen_widht, screen_height))
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
-font = pygame.font.Font('font/VCR_OSD_MONO_1.001.ttf', 28)  # Imposta il font per il testo
-font_turno = pygame.font.Font('font/Daydream.ttf', 35)
-font_tira = pygame.font.Font('font/Daydream.ttf', 28)
+font = pygame.font.Font('font/Casino.ttf', 28)  # Imposta il font per il testo
+font_turno = pygame.font.Font('font/Casino.ttf',60)
+font_tira = pygame.font.Font('font/Casino.ttf', 60)
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 dark_beige = (194, 183, 153)
+red= (191,37,57)
+blu= (36,79,131)
 # orange = (253, 139, 81)
 # dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
@@ -37,9 +39,17 @@ immagini_dadi = [
     pygame.image.load("immagini/dadi/6.png")
 ]
 
+#Caricamento delle immagini dei tiri
+immagini_tiri = [
+    pygame.image.load("immagini/tiri/tiro_non_fatto.png"),
+    pygame.image.load("immagini/tiri/tiro_fatto.png")
+]
+
+check_tiro = [False, False, False]
+
 # Ridimensionamento delle immagini dei dadi
 resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
-size_immagine = [img.get_size() for img in resize_immagine]  # Ottieni le dimensioni ridimensionate
+resize_immagine_t = [pygame.transform.scale(img, (30,30)) for img in immagini_tiri]
 
 tiro = False  # Variabile per tracciare se i dadi sono stati tirati
 counter = 0  # Conteggio dei tiri effettuati
@@ -77,6 +87,11 @@ class Giocatore:
 
         return self.tabellone
 
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_select.set_volume(0.3)
+suono_deselect.set_volume(0.3)
+
 # Classe per definire il comportamento di un dado
 class Dado:
     def __init__(self, x_pos, y_pos, num, selezionato):
@@ -87,22 +102,11 @@ class Dado:
 
     # Metodo per disegnare il dado sullo schermo
     def draw(self):
-        if self.numero == 1:
-            screen.blit(resize_immagine[0], (self.x_pos, self.y_pos))
-        elif self.numero == 2:
-            screen.blit(resize_immagine[1], (self.x_pos, self.y_pos))
-        elif self.numero == 3:
-            screen.blit(resize_immagine[2], (self.x_pos, self.y_pos))
-        elif self.numero == 4:
-            screen.blit(resize_immagine[3], (self.x_pos, self.y_pos))
-        elif self.numero == 5:
-            screen.blit(resize_immagine[4], (self.x_pos, self.y_pos))
-        elif self.numero == 6:
-            screen.blit(resize_immagine[5], (self.x_pos, self.y_pos))
+        screen.blit(resize_immagine[self.numero - 1], (self.x_pos, self.y_pos))
         
         if self.selezionato:
             bordo_dado = pygame.Rect(self.x_pos, self.y_pos, 100, 100)
-            pygame.draw.rect(screen, beige, bordo_dado, 10)
+            pygame.draw.rect(screen, beige, bordo_dado, 10, border_radius=11)
 
     def seleziona_dadi(self, pos, dadi):
         larghezza_dado = 100
@@ -110,6 +114,10 @@ class Dado:
 
         for dado in dadi:
             if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
+                if not dado.selezionato:
+                    suono_select.play()
+                else:
+                    suono_deselect.play()
                 dado.selezionato = not dado.selezionato
 
     # Metodo per lanciare il dado e generare un nuovo numero casuale
@@ -117,13 +125,7 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dado1 = Dado(550, 350, 6, False)
-dado2 = Dado(670, 350, 6, False)
-dado3 = Dado(790, 350, 6, False)
-dado4 = Dado(910, 350, 6, False)
-dado5 = Dado(1030, 350, 6, False)
-
-dadi = [dado1, dado2, dado3, dado4, dado5]  # Lista dei dadi
+dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)] 
 
 # Lista delle combinazioni visualizzate nel tabellone
 combinazioni = [
@@ -226,9 +228,18 @@ def calcola_punteggi(dadi):
 
     return punteggi
 
+def aggiorna_tiri(check_tiro):
+    x_base = 740
+    y = 680
 
-giocatore1= Giocatore("Luigi")
-giocatore2= Giocatore ("Ludovica")
+    for i in range(len(check_tiro)):
+        x = x_base + i * 70
+
+        if check_tiro[i]:
+            screen.blit(resize_immagine_t[1], (x,y))
+        else:
+            screen.blit(resize_immagine_t[0], (x,y))
+
 
 
 #########################################################################################
@@ -237,238 +248,363 @@ run = True  # Variabile per mantenere attivo il ciclo di gioco
 tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
 turno = True  # True: Giocatore 1, False: Giocatore 2
+schermata= "menu" #menu o gioco (le due fasi)
 
-pygame.mixer.music.load("suoni/suono_gioco.mp3")
-pygame.mixer.music.play(-1, 0.0)  # Riproduce la musica in loop
-pygame.mixer.music.set_volume(0.3)
+# oggetto dei giocatori
+giocatore1= Giocatore("")
+giocatore2= Giocatore ("")
 
-suono_roll= pygame.mixer.Sound("suoni/rolls.mp3")
+# Variabili di stato
+input_attivo1 = False  # Campo attivo per Giocatore 1
+input_attivo2 = False  # Campo attivo per Giocatore 2
 
-# Aggiungi questa funzione per creare caselle di input
-class InputBox:
-    def __init__(self, x, y, w, h, font, text=''):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.color = pygame.Color('gray')
-        self.text = text
-        self.font = font
-        self.txt_surface = font.render(text, True, pygame.Color('black'))
-        self.active = False
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # Controlla se il mouse è sopra la casella
-            self.active = self.rect.collidepoint(event.pos)
-            self.color = pygame.Color('dodgerblue') if self.active else pygame.Color('gray')
-        if event.type == pygame.KEYDOWN and self.active:
-            if event.key == pygame.K_RETURN:
-                pass  # Premi INVIO per confermare
-            elif event.key == pygame.K_BACKSPACE:
-                self.text = self.text[:-1]
-            else:
-                self.text += event.unicode
-            self.txt_surface = self.font.render(self.text, True, pygame.Color('black'))
-
-    def draw(self, screen):
-        # Disegna il testo e la casella
-        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
-        pygame.draw.rect(screen, self.color, self.rect, 2)
-
-
-# Configura la finestra
-screen = pygame.display.set_mode((1200,750))
-font = pygame.font.Font(None, 50)
-
-# Variabili del menu
-nome_giocatore1 = InputBox(300, 200, 400, 50, font)
-nome_giocatore2 = InputBox(300, 300, 400, 50, font)
-pulsante_inizia = pygame.Rect(400, 400, 200, 50)
-menu_attivo = True
-stato_gioco = "menu"
-clock = pygame.time.Clock()
-
-# Ciclo principale
-while menu_attivo:
-    screen.fill((173, 216, 230))  # Colore sfondo (azzurro chiaro)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            menu_attivo = False
-            run = False  # Esci dal gioco
-
-        nome_giocatore1.handle_event(event)
-        nome_giocatore2.handle_event(event)
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if pulsante_inizia.collidepoint(event.pos):
-                # Passa al gioco solo se i nomi sono inseriti
-                if nome_giocatore1.text and nome_giocatore2.text:
-                    giocatore1_nome = nome_giocatore1.text
-                    giocatore2_nome = nome_giocatore2.text
-                    stato_gioco = "giocando"
-                    menu_attivo = False
-
-    # Disegna gli elementi del menu
-    titolo = font.render("Inserisci i nomi dei giocatori", True, pygame.Color('black'))
-    screen.blit(titolo, (250, 100))
-
-    nome_giocatore1.draw(screen)
-    nome_giocatore2.draw(screen)
-
-    pygame.draw.rect(screen, pygame.Color('green'), pulsante_inizia)
-    testo_pulsante = font.render("Inizia", True, pygame.Color('white'))
-    screen.blit(testo_pulsante, (450, 410))
-
-    # Aggiorna lo schermo
-    pygame.display.flip()
-    clock.tick(30)
-
+pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
+pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
+pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
 
 # Ciclo principale del gioco (game loop)
 while run:
 
+    if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
 
+        if giocatore1.totale > giocatore2.totale:
+            screen.fill(blu)
+            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+            suono_vittoria.play()
+            vittoria = font_turno.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
+            screen.blit(vittoria, (300,350))
+        elif giocatore2.totale > giocatore1.totale:
+            screen.fill(red)
+            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+            suono_vittoria.play()
+            vittoria = font_turno.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
+            screen.blit(vittoria, (300,350))
+        else:
+            screen.fill(beige)
+            vittoria = font_turno.render("Pareggio ! : (", True, gray)
+            screen.blit(vittoria, (400,350))
+
+        pygame.display.flip()
+        pygame.time.wait(5000)
+
+        run = False
+        break
     
-    # 1. Aggiornamento dello sfondo
-    if turno:
-        screen.fill(teal)
-    else:
-        screen.fill(bordeaux)
-    
-    # Disegna la griglia del tabellone
-    disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
 
-    # Disegna i dadi sullo schermo
-    for dado in dadi:
-        dado.draw()
-    
-    # 5. Impostazione del pulsante "Tira!" o "Tiri finiti"
-    if counter == max_tiri:
-        tira_btn_colore = dark_beige
-        btn_testo = font_tira.render("Tiri finiti", True, gray) #gray, white o più chiaro lo sfondo?
-        btn_pos = [705, 580]
-    else:
-        tira_btn_colore = beige
-        btn_testo = font_tira.render("Tira!", True, gray)
-        btn_pos = [760, 580]
+    if schermata== "menu" :
 
-    # Disegna il pulsante "Tira!" con il colore e testo aggiornati
-    tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100])
+        # Carica lo sfondo
+        sfondo = pygame.image.load("immagini/sfondo.png")
+        screen.blit(sfondo, (0, 0))
 
-    # Mostra il testo del pulsante "Tira!" sopra il pulsante
-    screen.blit(btn_testo, btn_pos)
+        # Crea una superficie trasparente per il contenitore
+        surface = pygame.Surface((screen_widht, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
 
-    # Gestore degli eventi Pygame
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False  # Esci dal gioco se viene chiusa la finestra
+        # Rettangoli per i campi di input e il pulsante Play
+        rect_contenitore = pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
+        rect_bordocontenitore= pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
+        rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
+        rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
+        rect_bordo1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
+        rect_bordo2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
+        rect_play = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_bordoplay = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_opzioni = pygame.Rect (680,455,120,50)
+        rect_bordopzioni = pygame.Rect (680,455,120,50)
+        rect_regole= pygame.Rect (400,455,120,50)
+        rect_bordoregole= pygame.Rect (400,455,120,50)
+
+        # Colori
+        color_giocatore1 = teal if input_attivo1 else white
+        color_giocatore2 = bordeaux if input_attivo2 else white
+        color_contenitore = (255,255, 255, 90)  # bianco semi-trasparente
+
+        # Disegna il rettangolo trasparente sulla superficie
+        pygame.draw.rect(surface, color_contenitore, rect_contenitore, 0, 8)
+        pygame.draw.rect(surface, black, rect_bordocontenitore,5,8)
+
+        # Blitta la superficie trasparente sullo schermo
+        screen.blit(surface, (0, 0))
+
+        # rettangoli per inserimento nomi
+        pygame.draw.rect(screen, color_giocatore1, rect_giocatore1, 0, 8)
+        pygame.draw.rect(screen, color_giocatore2, rect_giocatore2, 0, 8)
+        pygame.draw.rect(screen, black, rect_bordo1, 5, 8)
+        pygame.draw.rect(screen, black, rect_bordo2, 5, 8)
+
+
+        # titolo
+        font_grande = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 100
+        title_text = font_grande.render("YAHTZEE", True, white)
+        screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
+
+        # sottotitolo
+        instruction_text = font.render("INSERISCI GIOCATORI:", True, black)
+        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 230))
+
+        # testo nei campi di input
+        text_giocatore1 = font.render(giocatore1.nome, True, black)
+        screen.blit(text_giocatore1, (rect_giocatore1.x + 18, rect_giocatore1.y + 18))
+
+        text_giocatore2 = font.render(giocatore2.nome, True, black)
+        screen.blit(text_giocatore2, (rect_giocatore2.x + 18, rect_giocatore2.y + 18))
         
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            
-            # 8. Controllo se il pulsante "Tira!" è stato cliccato
-            if tira_btn.collidepoint(event.pos) and counter < max_tiri:
-                tiro = True  # Avvia il tiro dei dadi
-                counter += 1  # Incrementa il numero di tiri
-                # Lancia i dadi non selezionati
-                for dado in dadi:
-                    if not dado.selezionato:
-                        dado.lancio_dadi()
-                suono_roll.play()
+        # pulsante Play
+        pygame.draw.rect(screen, teal, rect_play, 0, 8)
+        pygame.draw.rect(screen, black, rect_bordoplay, 5, 8)
+        play_text = font.render("PLAY", True, white)
+        screen.blit(play_text, (rect_play.x + 30, rect_play.y + 20)) 
 
-                # Calcola i punteggi dopo il lancio
-                punteggi = calcola_punteggi(dadi)
-            
-            # 10. Gestione della selezione dei dadi
-            if tiro:
-                for dado in dadi:
-                    dado.seleziona_dadi((mouse_x, mouse_y), dadi)
+        # pulsante opzioni   
+        pygame.draw.rect(screen, bordeaux, rect_opzioni,0,8)
+        pygame.draw.rect(screen, black, rect_bordopzioni, 5, 8)
+        opzioni_text= font.render("OPZIONI", True, white)
+        screen.blit(opzioni_text, (rect_opzioni.x + 15, rect_opzioni.y + 13)) 
 
-            # 11. Controllo se è stata cliccata una cella del tabellone
-            colonna, riga = rileva_clic(mouse_x, mouse_y)
+        # pulsante regole
+        pygame.draw.rect(screen, bordeaux, rect_regole,0,8)
+        pygame.draw.rect(screen, black, rect_bordoregole, 5, 8)
+        regole_text= font.render("REGOLE", True, white)
+        screen.blit(regole_text, (rect_regole.x + 15, rect_regole.y + 13)) 
+
+
+        # Gestione degli eventi
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Controlla quale campo è stato cliccato
+                if rect_giocatore1.collidepoint(event.pos):
+                    input_attivo1 = True
+                    input_attivo2 = False
+                elif rect_giocatore2.collidepoint(event.pos):
+                    input_attivo2 = True
+                    input_attivo1 = False
+                elif rect_play.collidepoint(event.pos):
+                    schermata = "gioco"
+                    suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+                    suono_inizio.play()
+                elif rect_opzioni.collidepoint(event.pos):
+                    schermata = "opzioni"
+                elif rect_regole.collidepoint(event.pos):
+                    schermata = "regole"
+                else:
+                    input_attivo1 = False
+                    input_attivo2 = False
+                
+
+            if event.type == pygame.KEYDOWN:
+                # Scrittura nel campo attivo
+                if input_attivo1:
+                    if event.key == pygame.K_BACKSPACE:
+                        giocatore1.nome = giocatore1.nome[:-1]
+                    elif event.key == pygame.K_TAB:  # Passa al campo giocatore 2
+                        input_attivo1 = False
+                        input_attivo2 = True
+                    else:
+                        giocatore1.nome += event.unicode
+                elif input_attivo2:
+                    if event.key == pygame.K_BACKSPACE:
+                        giocatore2.nome = giocatore2.nome[:-1]
+                    elif event.key == pygame.K_TAB:  # Torna al campo giocatore 1
+                        input_attivo2 = False
+                        input_attivo1 = True
+                    elif event.key == pygame.K_RETURN:
+                        schermata = "gioco"
+                        suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+                        suono_inizio.play()
+                    else:
+                        giocatore2.nome += event.unicode
+
+        # Aggiorna la finestra
+        pygame.display.flip()
+    
+    
+    elif schermata == "opzioni":
+        
+        # Carica lo sfondo
+        sfondo = pygame.image.load("immagini/sfondo.png")
+        screen.blit(sfondo, (0, 0))
+
+        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
+        rect_indietro= pygame.Rect((screen_widht-120)//2,550,120,50)
+        
+
+        pygame.draw.rect(screen, white, rect_contenitore2,0,8)
+        pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
+        pygame.draw.rect(screen, teal ,rect_indietro,0,8 )
+
+        # Gestione degli eventi
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if rect_indietro.collidepoint(event.pos):
+                    schermata = "menu"
+
+
+
+        pygame.display.flip()
+
+
+
+
+    elif schermata == "gioco" : 
+        # Aggiornamento dello sfondo in base al turno del giocatore
+        if turno:
+            # Carica lo sfondo 1
+            sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
+            screen.blit(sfondo, (0, 0))
+        else:
+            # Carica lo sfondo 2
+            sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
+            screen.blit(sfondo, (0, 0))
+   
+        # Disegna la griglia del tabellone
+        disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
+
+        # Disegna i dadi sullo schermo
+        for dado in dadi:
+            dado.draw()  # Metodo draw per mostrare ciascun dado
+
+        aggiorna_tiri(check_tiro)  # Aggiorna lo stato visivo dei tiri effettuati
+        
+        # Impostazione del pulsante "Tira!" o "Tiri finiti" in base al numero di tiri
+        if counter == max_tiri:
+            tira_btn_colore = dark_beige  # Colore del pulsante quando i tiri sono finiti
+            btn_testo = font_tira.render("Tiri finiti", True, gray)  # Testo del pulsante disabilitato
+            btn_pos = [705, 580]  # Posizione del testo
+        else:
+            tira_btn_colore = beige  # Colore del pulsante attivo
+            btn_testo = font_tira.render("Tira!", True, gray)  # Testo del pulsante attivo
+            btn_pos = [760, 580]  # Posizione del testo
+
+        # Disegna il pulsante "Tira!" con il colore e testo aggiornati
+        tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100])  # Rettangolo del pulsante
+
+        # Mostra il testo del pulsante "Tira!" sopra il pulsante
+        screen.blit(btn_testo, btn_pos)
+
+        # Gestore degli eventi Pygame
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # Evento di uscita
+                run = False  # Esci dal gioco se viene chiusa la finestra
             
-            if turno:
-                if colonna is not None and riga is not None:
-                    print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                    giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio
-                    turno = not turno
-                    counter=0
+            if event.type == pygame.MOUSEBUTTONDOWN:  # Evento di clic del mouse
+                mouse_x, mouse_y = pygame.mouse.get_pos()  # Ottieni la posizione del mouse
+                
+                # Controllo se il pulsante "Tira!" è stato cliccato
+                if tira_btn.collidepoint(event.pos) and counter < max_tiri:
+                    tiro = True  # Avvia il tiro dei dadi
+                    counter += 1  # Incrementa il numero di tiri
+                    check_tiro[counter - 1] = True  # Aggiorna l'indicatore dei tiri
+                    aggiorna_tiri(check_tiro)  # Aggiorna la visualizzazione dei tiri
+                    # Lancia i dadi non selezionati
                     for dado in dadi:
-                        dado.selezionato = False
-                        dado.numero = 6
-                        tiro= False       
-                    print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
-            else:
-                if colonna is not None and riga is not None:
-                    print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                    giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio
-                    turno = not turno
-                    counter= 0
+                        if not dado.selezionato:
+                            dado.lancio_dadi()  # Metodo per lanciare i dadi
+                    suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
+                    suono_roll.play()  # Riproduce il suono del tiro
+
+                    # Calcola i punteggi dopo il lancio
+                    punteggi = calcola_punteggi(dadi)
+                
+                # Gestione della selezione dei dadi
+                if tiro:
                     for dado in dadi:
-                        dado.selezionato = False
-                        dado.numero = 6
-                        tiro= False
-                    print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
-    
-    #scritta del turno corrente
-    if turno:
-        testo_giocatore1= font_turno.render (f"Turno Giocatore 1", True, white)
-        screen.blit(testo_giocatore1, (550,200))
-    else:
-        testo_giocatore2= font_turno.render (f"Turno giocatore 2", True, white)
-        screen.blit(testo_giocatore2, (550,200))
-    
-    # 12. Mostra i punteggi sul tabellone per entrambi i giocatori
-    y1_offset = 110
-    y2_offset = 110
-    x_pos1 = 280
-    x_pos2 = 430
+                        dado.seleziona_dadi((mouse_x, mouse_y), dadi)  # Metodo per selezionare i dadi
 
-    if turno:  # Turno giocatore 1
-        for combinazione, punteggio in punteggi.items():
-            # Mostra punteggi del giocatore 1
-            if combinazione in giocatore1.tabellone:
-                testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
-                screen.blit(testo_punteggio1, (x_pos1, y1_offset))
-            else:  # Mostra anteprima punteggi solo per giocatore corrente
-                testo_punteggio1 = font.render(f"{punteggio}", True, gray)
-                screen.blit(testo_punteggio1, (x_pos1, y1_offset))
-            y1_offset += 50
+                # Controllo se è stata cliccata una cella del tabellone
+                colonna, riga = rileva_clic(mouse_x, mouse_y)  # Determina riga e colonna cliccate
+                
+                if turno:  # Azioni per il turno del Giocatore 1
+                    if colonna is not None and riga is not None:  # Controllo valido
+                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                        giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 1
+                        suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
+                        suono_selezionepunteggio.play()
+                        turno = not turno  # Cambia turno
+                        counter = 0  # Resetta il conteggio dei tiri
+                        check_tiro = [False, False, False]  # Resetta i tiri
+                        aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
+                        for dado in dadi:  # Resetta lo stato dei dadi
+                            dado.selezionato = False
+                            dado.numero = 6
+                            tiro = False       
+                        print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
+                else:  # Azioni per il turno del Giocatore 2
+                    if colonna is not None and riga is not None:  # Controllo valido
+                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                        giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
+                        suono_selezionepunteggio.play()
+                        turno = not turno  # Cambia turno
+                        counter = 0  # Resetta il conteggio dei tiri
+                        check_tiro = [False, False, False]  # Resetta i tiri
+                        aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
+                        for dado in dadi:  # Resetta lo stato dei dadi
+                            dado.selezionato = False
+                            dado.numero = 6
+                            tiro = False
+                        print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
+        
+        # Mostra il turno corrente sullo schermo
+        if turno:
+            testo_giocatore1 = font_turno.render(f"TURNO DI : {giocatore1.nome}", True, white)
+            screen.blit(testo_giocatore1, (550, 200))  # Testo per il Giocatore 1
+        else:
+            testo_giocatore2 = font_turno.render(f"TURNO DI : {giocatore2.nome}", True, white)
+            screen.blit(testo_giocatore2, (550, 200))  # Testo per il Giocatore 2
+        
+        # Mostra i punteggi sul tabellone per entrambi i giocatori
+        y1_offset = 110  # Offset verticale per il Giocatore 1
+        y2_offset = 110  # Offset verticale per il Giocatore 2
+        x_pos1 = 280  # Posizione orizzontale per il Giocatore 1
+        x_pos2 = 430  # Posizione orizzontale per il Giocatore 2
 
-            # Mostra punteggi del giocatore 2 SOLO se sono stati assegnati
-            if combinazione in giocatore2.tabellone:
-                testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
-                screen.blit(testo_punteggio2, (x_pos2, y2_offset))
-            y2_offset += 50
+        if turno:  # Mostra i punteggi per il turno del Giocatore 1
+            for combinazione, punteggio in punteggi.items():
+                if combinazione in giocatore1.tabellone:  # Punteggi assegnati
+                    testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
+                    screen.blit(testo_punteggio1, (x_pos1, y1_offset))
+                else:  # Anteprima dei punteggi non assegnati
+                    testo_punteggio1 = font.render(f"{punteggio}", True, gray)
+                    screen.blit(testo_punteggio1, (x_pos1, y1_offset))
+                y1_offset += 50
 
-    else:  # Turno giocatore 2
-        for combinazione, punteggio in punteggi.items():
-            # Mostra punteggi del giocatore 2
-            if combinazione in giocatore2.tabellone:
-                testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
-                screen.blit(testo_punteggio2, (x_pos2, y2_offset))
-            else:  # Mostra anteprima punteggi solo per giocatore corrente
-                testo_punteggio2 = font.render(f"{punteggio}", True, gray)
-                screen.blit(testo_punteggio2, (x_pos2, y2_offset))
-            y2_offset += 50
+                if combinazione in giocatore2.tabellone:  # Mostra punteggi assegnati del Giocatore 2
+                    testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
+                    screen.blit(testo_punteggio2, (x_pos2, y2_offset))
+                y2_offset += 50
 
-            # Mostra punteggi del giocatore 1 SOLO se sono stati assegnati
-            if combinazione in giocatore1.tabellone:
-                testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
-                screen.blit(testo_punteggio1, (x_pos1, y1_offset))
-            y1_offset += 50
+        else:  # Mostra i punteggi per il turno del Giocatore 2
+            for combinazione, punteggio in punteggi.items():
+                if combinazione in giocatore2.tabellone:  # Punteggi assegnati
+                    testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
+                    screen.blit(testo_punteggio2, (x_pos2, y2_offset))
+                else:  # Anteprima dei punteggi non assegnati
+                    testo_punteggio2 = font.render(f"{punteggio}", True, gray)
+                    screen.blit(testo_punteggio2, (x_pos2, y2_offset))
+                y2_offset += 50
 
-    # Calcola e mostra il totale dei punteggi
-    totale_punteggi1 = giocatore1.totale
-    totale_text1 = font.render(f"{totale_punteggi1}", True, black)
-    screen.blit(totale_text1, (x_pos1, 660))
+                if combinazione in giocatore1.tabellone:  # Mostra punteggi assegnati del Giocatore 1
+                    testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
+                    screen.blit(testo_punteggio1, (x_pos1, y1_offset))
+                y1_offset += 50
 
-    totale_punteggi2 = giocatore2.totale
-    totale_text2 = font.render(f"{totale_punteggi2}", True, black)
-    screen.blit(totale_text2, (x_pos2, 660))
-    
-    # Aggiornamento dello schermo di gioco
-    pygame.display.flip()
+        # Calcola e mostra il totale dei punteggi
+        totale_punteggi1 = giocatore1.totale
+        totale_text1 = font.render(f"{totale_punteggi1}", True, black)
+        screen.blit(totale_text1, (x_pos1, 660))  # Mostra il totale del Giocatore 1
+
+        totale_punteggi2 = giocatore2.totale
+        totale_text2 = font.render(f"{totale_punteggi2}", True, black)
+        screen.blit(totale_text2, (x_pos2, 660))  # Mostra il totale del Giocatore 2
+        
+        pygame.display.flip()  # Aggiorna la finestra del gioco
 
 # Uscita dal programma Pygame
 pygame.quit()
-
