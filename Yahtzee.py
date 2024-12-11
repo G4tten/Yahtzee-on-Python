@@ -77,8 +77,10 @@ class Giocatore:
             if chiave not in self.tabellone:
                 self.tabellone[chiave] = punteggi.get(chiave)  # Preleva il punteggio
                 self.totale += punteggi.get(chiave)  # Aggiorna il totale punti
+                return True
             else:
                 print(f"La combinazione '{chiave}' è già stata utilizzata.")
+                return False
 
         # Ripulire le combinazioni non selezionate
         for combinazione in punteggi:
@@ -249,6 +251,8 @@ tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
 turno = True  # True: Giocatore 1, False: Giocatore 2
 schermata= "menu" #menu o gioco (le due fasi)
+messaggio_errore = None
+inizio_errore = None
 
 # oggetto dei giocatori
 giocatore1= Giocatore("")
@@ -258,8 +262,8 @@ giocatore2= Giocatore ("")
 input_attivo1 = False  # Campo attivo per Giocatore 1
 input_attivo2 = False  # Campo attivo per Giocatore 2
 
-pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
-pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
+# pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
+# pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
 pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
 
@@ -395,11 +399,7 @@ while run:
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
-
-
-        
-
-
+         
     elif schermata == "gioco" : 
         # Aggiornamento dello sfondo in base al turno del giocatore
         if turno:
@@ -471,18 +471,21 @@ while run:
                 if turno:  # Azioni per il turno del Giocatore 1
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 1
-                        suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
-                        suono_selezionepunteggio.play()
-                        turno = not turno  # Cambia turno
-                        counter = 0  # Resetta il conteggio dei tiri
-                        check_tiro = [False, False, False]  # Resetta i tiri
-                        aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
-                        for dado in dadi:  # Resetta lo stato dei dadi
-                            dado.selezionato = False
-                            dado.numero = 6
-                            tiro = False       
-                        print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
+                        if giocatore1.salva_punteggi(riga, punteggi):  # Salva il punteggio per il Giocatore 1
+                            suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
+                            suono_selezionepunteggio.play()
+                            turno = not turno  # Cambia turno
+                            counter = 0  # Resetta il conteggio dei tiri
+                            check_tiro = [False, False, False]  # Resetta i tiri
+                            aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
+                            for dado in dadi:  # Resetta lo stato dei dadi
+                                dado.selezionato = False
+                                dado.numero = 6
+                                tiro = False       
+                            print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
+                        else:
+                            messaggio_errore = f"Combinazione utilizzata"
+                            inizio_errore = pygame.time.get_ticks()
                 else:  # Azioni per il turno del Giocatore 2
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
@@ -497,6 +500,19 @@ while run:
                             dado.numero = 6
                             tiro = False
                         print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
+                    else:
+                        messaggio_errore = f"Combinazione utilizzata"
+                        inizio_errore = pygame.time.get_ticks()
+
+        if messaggio_errore:
+            tempo_trascorso = pygame.time.get_ticks() - inizio_errore
+            if tempo_trascorso < 3000:
+                alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
+                superfice_errore = font.render(messaggio_errore, True, beige)
+                superfice_errore.set_alpha(alpha)
+                screen.blit(superfice_errore, (10,20))
+            else:
+                messaggio_errore = None
         
         # Mostra il turno corrente sullo schermo
         if turno:
