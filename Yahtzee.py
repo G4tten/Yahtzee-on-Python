@@ -12,13 +12,15 @@ screen_height = 750
 screen = pygame.display.set_mode((screen_widht, screen_height))
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 font = pygame.font.Font('font/Casino.ttf', 28)  # Imposta il font per il testo
-font_turno = pygame.font.Font('font/Casino.ttf',90)
+font_turno = pygame.font.Font('font/Casino.ttf',60)
 font_tira = pygame.font.Font('font/Casino.ttf', 60)
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 dark_beige = (194, 183, 153)
+red= (191,37,57)
+blu= (36,79,131)
 # orange = (253, 139, 81)
 # dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
@@ -260,7 +262,6 @@ pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di 
 pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
 pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
-suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
 
 # Ciclo principale del gioco (game loop)
 while run:
@@ -268,11 +269,15 @@ while run:
     if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
 
         if giocatore1.totale > giocatore2.totale:
-            screen.fill(teal)
+            screen.fill(blu)
+            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+            suono_vittoria.play()
             vittoria = font_turno.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         elif giocatore2.totale > giocatore1.totale:
-            screen.fill(bordeaux)
+            screen.fill(red)
+            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+            suono_vittoria.play()
             vittoria = font_turno.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         else:
@@ -289,42 +294,56 @@ while run:
     if schermata== "menu" :
 
 
+        # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-        # Titolo
-        font_grande = pygame.font.Font("font/Casino.ttf", 100)  # Imposta la dimensione del font a 100
+        # Crea una superficie trasparente per il contenitore
+        surface = pygame.Surface((screen_widht, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
+
+        # Rettangoli per i campi di input e il pulsante Play
+        rect_contenitore = pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
+        rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
+        rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
+        rect_play = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+
+        # Colori
+        color_giocatore1 = teal if input_attivo1 else white
+        color_giocatore2 = bordeaux if input_attivo2 else white
+        color_contenitore = (255,255, 255, 90)  # bianco semi-trasparente
+
+        # Disegna il rettangolo trasparente sulla superficie
+        pygame.draw.rect(surface, color_contenitore, rect_contenitore, 0, 8)
+
+        # Blitta la superficie trasparente sullo schermo
+        screen.blit(surface, (0, 0))
+
+        # Disegna gli altri rettangoli direttamente sullo schermo
+        pygame.draw.rect(screen, color_giocatore1, rect_giocatore1, 0, 8)
+        pygame.draw.rect(screen, color_giocatore2, rect_giocatore2, 0, 8)
+
+        # Disegna il titolo
+        font_grande = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 100
         title_text = font_grande.render("YAHTZEE", True, white)
         screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
 
-        # Istruzione
-        instruction_text = font.render("INSERISCI GIOCATORI", True, white)
-        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 200))
-
-        # Rettangoli per i campi di input e il pulsante Play
-        rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2 , 250 , 300, 60)
-        rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 350, 300, 60)
-        rect_play = pygame.Rect((screen_widht- 100)//2, 450, 100, 50)
-
-        # Disegna i campi di input
-        color_giocatore1 = teal if input_attivo1 else white
-        color_giocatore2 = teal if input_attivo2 else white
-        pygame.draw.rect(screen, color_giocatore1, rect_giocatore1, 3,8)
-        pygame.draw.rect(screen, color_giocatore2, rect_giocatore2, 3,8)
+        # Inserimento dei nomi sottotitolo
+        instruction_text = font.render("INSERISCI GIOCATORI:", True, black)
+        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 230))
 
         # Disegna il testo nei campi di input
-        text_giocatore1 = font.render(giocatore1.nome, True, white)
-        screen.blit(text_giocatore1, (rect_giocatore1.x + 10, rect_giocatore1.y + 10))
+        text_giocatore1 = font.render(giocatore1.nome, True, black)
+        screen.blit(text_giocatore1, (rect_giocatore1.x + 18, rect_giocatore1.y + 15))
 
-        text_giocatore2 = font.render(giocatore2.nome, True, white)
-        screen.blit(text_giocatore2, (rect_giocatore2.x + 10, rect_giocatore2.y + 10))
+        text_giocatore2 = font.render(giocatore2.nome, True, black)
+        screen.blit(text_giocatore2, (rect_giocatore2.x + 18, rect_giocatore2.y + 15))
         
         # Disegna il pulsante Play
         pygame.draw.rect(screen, teal, rect_play, 0, 8)
         play_text = font.render("PLAY", True, white)
-        screen.blit(play_text, (rect_play.x + 15, rect_play.y + 10))
+        screen.blit(play_text, (rect_play.x + 30, rect_play.y + 20))
 
-            # Gestione degli eventi
+        # Gestione degli eventi
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -338,7 +357,9 @@ while run:
                     input_attivo2 = True
                     input_attivo1 = False
                 elif rect_play.collidepoint(event.pos):
-                    schermata = "gioco"  
+                    schermata = "gioco"
+                    suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+                    suono_inizio.play()
                 else:
                     input_attivo1 = False
                     input_attivo2 = False
@@ -348,25 +369,48 @@ while run:
                 if input_attivo1:
                     if event.key == pygame.K_BACKSPACE:
                         giocatore1.nome = giocatore1.nome[:-1]
+                    elif event.key == pygame.K_TAB:  # Passa al campo giocatore 2
+                        input_attivo1 = False
+                        input_attivo2 = True
                     else:
                         giocatore1.nome += event.unicode
                 elif input_attivo2:
                     if event.key == pygame.K_BACKSPACE:
                         giocatore2.nome = giocatore2.nome[:-1]
+                    elif event.key == pygame.K_TAB:  # Torna al campo giocatore 1
+                        input_attivo2 = False
+                        input_attivo1 = True
+                    elif event.key == pygame.K_RETURN:
+                        schermata = "gioco"
+                        suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+                        suono_inizio.play()
                     else:
                         giocatore2.nome += event.unicode
 
         # Aggiorna la finestra
         pygame.display.flip()
+    
+    elif schermata == "opzioni":
+        
+        # Carica lo sfondo
+        sfondo = pygame.image.load("immagini/sfondo.png")
+        screen.blit(sfondo, (0, 0))
+
+
+        
 
 
     elif schermata == "gioco" : 
         # Aggiornamento dello sfondo in base al turno del giocatore
         if turno:
-            screen.fill(teal)  # Sfondo per Giocatore 1
+            # Carica lo sfondo 1
+            sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
+            screen.blit(sfondo, (0, 0))
         else:
-            screen.fill(bordeaux)  # Sfondo per Giocatore 2
-        
+            # Carica lo sfondo 2
+            sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
+            screen.blit(sfondo, (0, 0))
+   
         # Disegna la griglia del tabellone
         disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
 
@@ -410,6 +454,7 @@ while run:
                     for dado in dadi:
                         if not dado.selezionato:
                             dado.lancio_dadi()  # Metodo per lanciare i dadi
+                    suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
                     suono_roll.play()  # Riproduce il suono del tiro
 
                     # Calcola i punteggi dopo il lancio
@@ -427,6 +472,8 @@ while run:
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
                         giocatore1.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 1
+                        suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
+                        suono_selezionepunteggio.play()
                         turno = not turno  # Cambia turno
                         counter = 0  # Resetta il conteggio dei tiri
                         check_tiro = [False, False, False]  # Resetta i tiri
@@ -440,6 +487,7 @@ while run:
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
                         giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
+                        suono_selezionepunteggio.play()
                         turno = not turno  # Cambia turno
                         counter = 0  # Resetta il conteggio dei tiri
                         check_tiro = [False, False, False]  # Resetta i tiri
@@ -452,10 +500,10 @@ while run:
         
         # Mostra il turno corrente sullo schermo
         if turno:
-            testo_giocatore1 = font_turno.render(f"TURNO DI  {giocatore1.nome}", True, white)
+            testo_giocatore1 = font_turno.render(f"TURNO DI : {giocatore1.nome}", True, white)
             screen.blit(testo_giocatore1, (550, 200))  # Testo per il Giocatore 1
         else:
-            testo_giocatore2 = font_turno.render(f"TURNO DI {giocatore2.nome}", True, white)
+            testo_giocatore2 = font_turno.render(f"TURNO DI : {giocatore2.nome}", True, white)
             screen.blit(testo_giocatore2, (550, 200))  # Testo per il Giocatore 2
         
         # Mostra i punteggi sul tabellone per entrambi i giocatori
