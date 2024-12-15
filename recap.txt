@@ -1,0 +1,10 @@
+salva_punteggi(self,riga,punteggi)
+    if chiave not in self.tabellone --> SALVA_PUNTEGGI return True
+    else --> SALVA_PUNTEGGI return False
+
+In questo modo SALVA_PUNTEGGI non va avanti, significa che il la funzione non accederà MAI al for e quindi mostra i punteggi anche sull'altra
+casella
+Inoltre, ritornando già True o False, la funzione NON PUO' FARE IL RETURN SELF.Tabellone
+
+calcola_punteggi(dadi) --> return punteggi (non c'è nulla di sbagliato qui)
+

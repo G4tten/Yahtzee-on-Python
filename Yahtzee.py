@@ -4,16 +4,17 @@ import pygame
 pygame.init()  # Inizializzazione del modulo Pygame
 
 #Schermo
-info = pygame.display.Info()
-screen_widht = 1200
-screen_height = 750
+screen_widht = 1200 #larghezza schermo
+screen_height = 750 #altezza schermo
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((screen_widht, screen_height))
+screen = pygame.display.set_mode((screen_widht, screen_height)) #impostiamo lo schermo con le grandezze precedentemente definite
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
-font = pygame.font.Font('font/Casino.ttf', 28)  # Imposta il font per il testo
-font_turno = pygame.font.Font('font/Casino.ttf',60)
-font_tira = pygame.font.Font('font/Casino.ttf', 60)
+
+# Font
+font = pygame.font.Font('font/Casino.ttf', 28) # Imposta la dimensione del font a 28
+font_grande = pygame.font.Font('font/Casino.ttf',60) # Imposta la dimensione del font a 60
+font_titolo = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 120
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
@@ -29,6 +30,22 @@ black = (0, 0, 0)
 gray = (128, 128, 128)
 # background = beige  # Colore di sfondo
 
+#Musica di sottofondo
+pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
+pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
+pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
+#Effetti
+suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
+suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
+#Effetto select
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_select.set_volume(0.3)
+#Effetto deselect
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_deselect.set_volume(0.3)
+
 # Caricamento delle immagini dei dadi
 immagini_dadi = [
     pygame.image.load("immagini/dadi/1.png"), 
@@ -39,21 +56,21 @@ immagini_dadi = [
     pygame.image.load("immagini/dadi/6.png")
 ]
 
+# Ridimensionamento delle immagini dei dadi
+resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
+
 #Caricamento delle immagini dei tiri
 immagini_tiri = [
     pygame.image.load("immagini/tiri/tiro_non_fatto.png"),
     pygame.image.load("immagini/tiri/tiro_fatto.png")
 ]
 
-check_tiro = [False, False, False]
-
-# Ridimensionamento delle immagini dei dadi
-resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
+# Ridimensionamento delle immagini del numero di tiri disponibili
 resize_immagine_t = [pygame.transform.scale(img, (30,30)) for img in immagini_tiri]
 
-tiro = False  # Variabile per tracciare se i dadi sono stati tirati
-counter = 0  # Conteggio dei tiri effettuati
-max_tiri = 3  # Numero massimo di tiri consentiti
+check_tiro = [False, False, False] #lista per verificare quanti tiri sono stati fatti
+
+###################################################################################################################################################
 
 class Giocatore:
     def __init__(self, nome):
@@ -69,6 +86,9 @@ class Giocatore:
             8: "Full", 9: "Scala", 10: "Yahtzee"
         }
 
+        controllo = True
+
+        #DA RIVEDERE IL CONTROLLO SE è STATA GIA' SALVATA O MENO (magari invece di return si potrebbe impostare una variabile)
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
             chiave = riga_to_chiave[riga]
@@ -77,22 +97,18 @@ class Giocatore:
             if chiave not in self.tabellone:
                 self.tabellone[chiave] = punteggi.get(chiave)  # Preleva il punteggio
                 self.totale += punteggi.get(chiave)  # Aggiorna il totale punti
-                return True
+                controllo = True
             else:
-                print(f"La combinazione '{chiave}' è già stata utilizzata.")
-                return False
+                controllo = False
 
         # Ripulire le combinazioni non selezionate
         for combinazione in punteggi:
             if combinazione not in self.tabellone:
                 punteggi[combinazione] = " "
 
-        return self.tabellone
+        return self.tabellone, controllo
 
-suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
-suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
-suono_select.set_volume(0.3)
-suono_deselect.set_volume(0.3)
+###################################################################################################################################################
 
 # Classe per definire il comportamento di un dado
 class Dado:
@@ -127,13 +143,17 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)] 
+dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)]
 
-# Lista delle combinazioni visualizzate nel tabellone
-combinazioni = [
-    "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", 
-    "Tris", "Quadris", "Full", "Scala", "Yahtzee", "Totale"
-]
+################################################################################################################################################### 
+
+# Dimensioni e posizione del tabellone
+larghezza_cella = 150
+altezza_cella = 50
+righe = 12
+colonne = 3
+offset_x = 65  # Offset orizzontale della griglia
+offset_y = 100  # Offset verticale della griglia
 
 # Funzione per disegnare la griglia del tabellone
 def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
@@ -160,14 +180,6 @@ def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_i
             testo = font.render(combinazione, True, black)  # Renderizza il testo
             schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))  # Posiziona il testo con un piccolo margine
 
-# Dimensioni e posizione del tabellone
-larghezza_cella = 150
-altezza_cella = 50
-righe = 12
-colonne = 3
-offset_x = 65  # Offset orizzontale della griglia
-offset_y = 100  # Offset verticale della griglia
-
 # Funzione per rilevare il click sulla griglia
 def rileva_clic(x, y):
     if offset_x <= x <= offset_x + colonne * larghezza_cella and \
@@ -186,7 +198,15 @@ def rileva_clic(x, y):
     else:
         print('Clic fuori dalla griglia')
         return None, None
-            
+    
+###################################################################################################################################################
+
+# Lista delle combinazioni visualizzate nel tabellone
+combinazioni = [
+    "Uno", "Due", "Tre", "Quattro", "Cinque", "Sei", 
+    "Tris", "Quadris", "Full", "Scala", "Yahtzee", "Totale"
+]
+
 # Dizionario per tracciare i punteggi
 punteggi = {} 
 # Funzione per calcolare i punteggi basati sui dadi tirati
@@ -230,27 +250,28 @@ def calcola_punteggi(dadi):
 
     return punteggi
 
+###################################################################################################################################################
+
 def aggiorna_tiri(check_tiro):
-    x_base = 740
-    y = 680
+    x_base = 740 #x di partenza
+    y = 680 #y fisso
 
     for i in range(len(check_tiro)):
-        x = x_base + i * 70
+        x = x_base + i * 70 #aumenta la x di partenza in modo che i puntini siano distanziati equamentre tra loro
 
-        if check_tiro[i]:
-            screen.blit(resize_immagine_t[1], (x,y))
+        if check_tiro[i]: #se l'elemento i di check tiro è == True, allora...
+            screen.blit(resize_immagine_t[1], (x,y)) #... stampa a schermo il puntino verde altrimenti...
         else:
-            screen.blit(resize_immagine_t[0], (x,y))
-
-
+            screen.blit(resize_immagine_t[0], (x,y)) #... se check tiro è == a False stampa a schermo il puntino bianco
 
 #########################################################################################
 # Inizializzazione delle variabili di gioco
 run = True  # Variabile per mantenere attivo il ciclo di gioco
 tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
+max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
-schermata= "menu" #menu o gioco (le due fasi)
+schermata= "gioco" #menu o gioco (le due fasi)
 messaggio_errore = None
 inizio_errore = None
 
@@ -260,12 +281,7 @@ giocatore2= Giocatore ("")
 
 # Variabili di stato
 input_attivo1 = False  # Campo attivo per Giocatore 1
-input_attivo2 = False  # Campo attivo per Giocatore 2
-
-# pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
-# pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
-pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
-
+input_attivo2 = False  # Campo attivo per Giocatore 2 
 
 # Ciclo principale del gioco (game loop)
 while run:
@@ -274,19 +290,17 @@ while run:
 
         if giocatore1.totale > giocatore2.totale:
             screen.fill(blu)
-            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
             suono_vittoria.play()
-            vittoria = font_turno.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
+            vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         elif giocatore2.totale > giocatore1.totale:
             screen.fill(red)
-            suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
             suono_vittoria.play()
-            vittoria = font_turno.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
+            vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
             screen.blit(vittoria, (300,350))
         else:
             screen.fill(beige)
-            vittoria = font_turno.render("Pareggio ! : (", True, gray)
+            vittoria = font_grande.render("Pareggio ! : (", True, gray)
             screen.blit(vittoria, (400,350))
 
         pygame.display.flip()
@@ -296,7 +310,6 @@ while run:
         break
     
     if schermata== "menu" :
-
 
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
@@ -327,8 +340,7 @@ while run:
         pygame.draw.rect(screen, color_giocatore2, rect_giocatore2, 0, 8)
 
         # Disegna il titolo
-        font_grande = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 100
-        title_text = font_grande.render("YAHTZEE", True, white)
+        title_text = font_titolo.render("YAHTZEE", True, white)
         screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
 
         # Inserimento dei nomi sottotitolo
@@ -362,7 +374,6 @@ while run:
                     input_attivo1 = False
                 elif rect_play.collidepoint(event.pos):
                     schermata = "gioco"
-                    suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
                     suono_inizio.play()
                 else:
                     input_attivo1 = False
@@ -384,12 +395,11 @@ while run:
                     elif event.key == pygame.K_TAB:  # Torna al campo giocatore 1
                         input_attivo2 = False
                         input_attivo1 = True
-                    elif event.key == pygame.K_RETURN:
-                        schermata = "gioco"
-                        suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
-                        suono_inizio.play()
                     else:
                         giocatore2.nome += event.unicode
+                if event.key == pygame.K_RETURN:
+                    schermata = "gioco"
+                    suono_inizio.play()
 
         # Aggiorna la finestra
         pygame.display.flip()
@@ -423,11 +433,11 @@ while run:
         # Impostazione del pulsante "Tira!" o "Tiri finiti" in base al numero di tiri
         if counter == max_tiri:
             tira_btn_colore = dark_beige  # Colore del pulsante quando i tiri sono finiti
-            btn_testo = font_tira.render("Tiri finiti", True, gray)  # Testo del pulsante disabilitato
+            btn_testo = font_grande.render("Tiri finiti", True, gray)  # Testo del pulsante disabilitato
             btn_pos = [705, 580]  # Posizione del testo
         else:
             tira_btn_colore = beige  # Colore del pulsante attivo
-            btn_testo = font_tira.render("Tira!", True, gray)  # Testo del pulsante attivo
+            btn_testo = font_grande.render("Tira!", True, gray)  # Testo del pulsante attivo
             btn_pos = [760, 580]  # Posizione del testo
 
         # Disegna il pulsante "Tira!" con il colore e testo aggiornati
@@ -454,7 +464,6 @@ while run:
                     for dado in dadi:
                         if not dado.selezionato:
                             dado.lancio_dadi()  # Metodo per lanciare i dadi
-                    suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
                     suono_roll.play()  # Riproduce il suono del tiro
 
                     # Calcola i punteggi dopo il lancio
@@ -471,8 +480,29 @@ while run:
                 if turno:  # Azioni per il turno del Giocatore 1
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        if giocatore1.salva_punteggi(riga, punteggi):  # Salva il punteggio per il Giocatore 1
-                            suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
+                        _, controllo = giocatore1.salva_punteggi(riga,punteggi)
+                        if controllo:
+                            if giocatore1.salva_punteggi(riga, punteggi):  # Salva il punteggio per il Giocatore 1
+                                suono_selezionepunteggio.play()
+                                turno = not turno  # Cambia turno
+                                counter = 0  # Resetta il conteggio dei tiri
+                                check_tiro = [False, False, False]  # Resetta i tiri
+                                aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
+                                for dado in dadi:  # Resetta lo stato dei dadi
+                                    dado.selezionato = False
+                                    dado.numero = 6
+                                    tiro = False   
+                                print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
+                                print("Controllo dopo la chiamata della funzione: ", controllo)
+                        else:
+                            messaggio_errore = "Punteggio gia' salvato!"
+                            inizio_errore = pygame.time.get_ticks()
+                else:  # Azioni per il turno del Giocatore 2
+                    if colonna is not None and riga is not None:  # Controllo valido
+                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
+                        _, controllo = giocatore2.salva_punteggi(riga,punteggi)
+                        if controllo:
+                            giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
                             suono_selezionepunteggio.play()
                             turno = not turno  # Cambia turno
                             counter = 0  # Resetta il conteggio dei tiri
@@ -481,27 +511,10 @@ while run:
                             for dado in dadi:  # Resetta lo stato dei dadi
                                 dado.selezionato = False
                                 dado.numero = 6
-                                tiro = False       
-                            print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
-                        else:
-                            messaggio_errore = f"Combinazione utilizzata"
-                            inizio_errore = pygame.time.get_ticks()
-                else:  # Azioni per il turno del Giocatore 2
-                    if colonna is not None and riga is not None:  # Controllo valido
-                        print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
-                        suono_selezionepunteggio.play()
-                        turno = not turno  # Cambia turno
-                        counter = 0  # Resetta il conteggio dei tiri
-                        check_tiro = [False, False, False]  # Resetta i tiri
-                        aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
-                        for dado in dadi:  # Resetta lo stato dei dadi
-                            dado.selezionato = False
-                            dado.numero = 6
-                            tiro = False
-                        print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
+                                tiro = False                          
+                            print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
                     else:
-                        messaggio_errore = f"Combinazione utilizzata"
+                        messaggio_errore = "Punteggio gia' salvato!"
                         inizio_errore = pygame.time.get_ticks()
 
         if messaggio_errore:
@@ -516,10 +529,10 @@ while run:
         
         # Mostra il turno corrente sullo schermo
         if turno:
-            testo_giocatore1 = font_turno.render(f"TURNO DI : {giocatore1.nome}", True, white)
+            testo_giocatore1 = font_grande.render(f"TURNO DI : {giocatore1.nome}", True, white)
             screen.blit(testo_giocatore1, (550, 200))  # Testo per il Giocatore 1
         else:
-            testo_giocatore2 = font_turno.render(f"TURNO DI : {giocatore2.nome}", True, white)
+            testo_giocatore2 = font_grande.render(f"TURNO DI : {giocatore2.nome}", True, white)
             screen.blit(testo_giocatore2, (550, 200))  # Testo per il Giocatore 2
         
         # Mostra i punteggi sul tabellone per entrambi i giocatori
