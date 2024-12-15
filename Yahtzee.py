@@ -276,7 +276,7 @@ tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
 max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
-schermata= "gioco" #menu o gioco (le due fasi)
+schermata= "menu" #menu o gioco (le due fasi)
 inizio_errore = None
 
 # oggetto dei giocatori
@@ -634,14 +634,14 @@ while run:
             # Carica lo sfondo 1
             sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
             screen.blit(sfondo, (0, 0))
-            if giocatore1.messaggio_errore:
-                giocatore1.mostra_messaggio_errore(screen, font, beige)
+            # if giocatore1.messaggio_errore:
+            giocatore1.mostra_messaggio_errore(screen, font, beige)
         else:
             # Carica lo sfondo 2
             sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
             screen.blit(sfondo, (0, 0))
-            if giocatore2.messaggio_errore:
-                giocatore2.mostra_messaggio_errore(screen, font, beige)
+            # if giocatore2.messaggio_errore:
+            giocatore2.mostra_messaggio_errore(screen, font, beige)
 
         
         rect_menu= pygame.Rect(850,50,120,50)
@@ -733,24 +733,22 @@ while run:
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
                         tabellone, controllo= giocatore1.salva_punteggi(riga,punteggi)
                         if controllo:
-                            if giocatore1.salva_punteggi(riga, punteggi):  # Salva il punteggio per il Giocatore 1
-                                suono_selezionepunteggio.play()
-                                turno = not turno  # Cambia turno
-                                counter = 0  # Resetta il conteggio dei tiri
-                                check_tiro = [False, False, False]  # Resetta i tiri
-                                aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
-                                for dado in dadi:  # Resetta lo stato dei dadi
-                                    dado.selezionato = False
-                                    dado.numero = 6
-                                    tiro = False   
-                                print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
+                            suono_selezionepunteggio.play()
+                            turno = not turno  # Cambia turno
+                            counter = 0  # Resetta il conteggio dei tiri
+                            check_tiro = [False, False, False]  # Resetta i tiri
+                            aggiorna_tiri(check_tiro)  # Aggiorna visivamente i tiri
+                            for dado in dadi:  # Resetta lo stato dei dadi
+                                dado.selezionato = False
+                                dado.numero = 6
+                                tiro = False   
+                            print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
 
                 else:  # Azioni per il turno del Giocatore 2
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        _, controllo= giocatore2.salva_punteggi(riga,punteggi)
+                        tabellone, controllo= giocatore2.salva_punteggi(riga,punteggi)
                         if controllo:
-                            giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
                             suono_selezionepunteggio.play()
                             turno = not turno  # Cambia turno
                             counter = 0  # Resetta il conteggio dei tiri
@@ -784,10 +782,16 @@ while run:
         
         # Mostra il turno corrente sullo schermo
         if turno:
-            testo_giocatore1 = font_grande.render(f"TURNO DI : {giocatore1.nome}", True, white)
+            if giocatore1.nome:
+                testo_giocatore1 = font_grande.render(f"TURNO DI : {giocatore1.nome}", True, white)
+            else:
+                testo_giocatore1 = font_grande.render("TURNO DI : GIOCATORE 1", True, white)
             screen.blit(testo_giocatore1, (550, 200))  # Testo per il Giocatore 1
         else:
-            testo_giocatore2 = font_grande.render(f"TURNO DI : {giocatore2.nome}", True, white)
+            if giocatore2.nome:
+                testo_giocatore2 = font_grande.render(f"TURNO DI : {giocatore2.nome}", True, white)
+            else:
+                testo_giocatore2 = font_grande.render("TURNO DI : GIOCATORE 2", True, white)
             screen.blit(testo_giocatore2, (550, 200))  # Testo per il Giocatore 2
         
         # Mostra i punteggi sul tabellone per entrambi i giocatori
