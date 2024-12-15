@@ -31,22 +31,6 @@ black = (0, 0, 0)
 gray = (128, 128, 128)
 # background = beige  # Colore di sfondo
 
-#Musica di sottofondo
-pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
-pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofondo
-pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
-#Effetti
-suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
-suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
-suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
-suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
-#Effetto select
-suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
-suono_select.set_volume(0.3)
-#Effetto deselect
-suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
-suono_deselect.set_volume(0.3)
-
 # Caricamento delle immagini dei dadi
 immagini_dadi = [
     pygame.image.load("immagini/dadi/1.png"), 
@@ -78,6 +62,8 @@ class Giocatore:
         self.nome = nome  # Nome del giocatore
         self.tabellone = {}  # Tabellone personale
         self.totale = 0  # Totale punti
+        self.messaggio_errore = None
+        self.inizio_errore = None
 
     def salva_punteggi(self, riga, punteggi):
         # Mappa delle righe per associare il rigo a una chiave del tabellone
@@ -89,6 +75,7 @@ class Giocatore:
 
         controllo = True
 
+
         #DA RIVEDERE IL CONTROLLO SE è STATA GIA' SALVATA O MENO (magari invece di return si potrebbe impostare una variabile)
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
@@ -98,16 +85,33 @@ class Giocatore:
             if chiave not in self.tabellone:
                 self.tabellone[chiave] = punteggi.get(chiave)  # Preleva il punteggio
                 self.totale += punteggi.get(chiave)  # Aggiorna il totale punti
+
+                # Ripulire le combinazioni non selezionate
+                for combinazione in punteggi:
+                    if combinazione not in self.tabellone:
+                        punteggi[combinazione] = " "
                 controllo = True
+                self.messaggio_errore = None
+                self.inizio_errore = None
             else:
+                self.messaggio_errore = "Punteggio gia' salvato!"
+                self.inizio_errore = pygame.time.get_ticks() #questa variabbbbbbile prende lo stesso identico momento e quindi la dissolvenza non avviene
                 controllo = False
 
-        # Ripulire le combinazioni non selezionate
-        for combinazione in punteggi:
-            if combinazione not in self.tabellone:
-                punteggi[combinazione] = " "
 
         return self.tabellone, controllo
+    
+    def mostra_messaggio_errore(self, screen, font, beige):
+            if self.messaggio_errore and self.inizio_errore is not None:
+                tempo_trascorso = pygame.time.get_ticks() - self.inizio_errore
+                if tempo_trascorso < 3000:
+                    alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
+                    superfice_errore = font.render(self.messaggio_errore, True, beige)
+                    superfice_errore.set_alpha(alpha)
+                    screen.blit(superfice_errore, (10,20))
+                else:
+                    self.messaggio_errore = None
+                    self.inizio_errore = None 
 
 ###################################################################################################################################################
 
@@ -273,7 +277,6 @@ counter = 0  # Conteggio dei tiri effettuati
 max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
 schermata= "gioco" #menu o gioco (le due fasi)
-messaggio_errore = None
 inizio_errore = None
 
 # oggetto dei giocatori
@@ -296,6 +299,12 @@ suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per 
 suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
 suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
 suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
+#Effetto select
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_select.set_volume(0.3)
+# #Effetto deselect
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_deselect.set_volume(0.3)
 
 
 # Ciclo principale del gioco (game loop)
@@ -625,10 +634,14 @@ while run:
             # Carica lo sfondo 1
             sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
             screen.blit(sfondo, (0, 0))
+            if giocatore1.messaggio_errore:
+                giocatore1.mostra_messaggio_errore(screen, font, beige)
         else:
             # Carica lo sfondo 2
             sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
             screen.blit(sfondo, (0, 0))
+            if giocatore2.messaggio_errore:
+                giocatore2.mostra_messaggio_errore(screen, font, beige)
 
         
         rect_menu= pygame.Rect(850,50,120,50)
@@ -692,7 +705,6 @@ while run:
             
             if event.type == pygame.MOUSEBUTTONDOWN:  # Evento di clic del mouse
                 mouse_x, mouse_y = pygame.mouse.get_pos()  # Ottieni la posizione del mouse
-                
                 # Controllo se il pulsante "Tira!" è stato cliccato
                 if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                     tiro = True  # Avvia il tiro dei dadi
@@ -719,7 +731,7 @@ while run:
                 if turno:  # Azioni per il turno del Giocatore 1
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        _, controllo = giocatore1.salva_punteggi(riga,punteggi)
+                        tabellone, controllo= giocatore1.salva_punteggi(riga,punteggi)
                         if controllo:
                             if giocatore1.salva_punteggi(riga, punteggi):  # Salva il punteggio per il Giocatore 1
                                 suono_selezionepunteggio.play()
@@ -732,14 +744,11 @@ while run:
                                     dado.numero = 6
                                     tiro = False   
                                 print(f"Tabellone 1 aggiornato: {giocatore1.tabellone}")
-                                print("Controllo dopo la chiamata della funzione: ", controllo)
-                        else:
-                            messaggio_errore = "Punteggio gia' salvato!"
-                            inizio_errore = pygame.time.get_ticks()
+
                 else:  # Azioni per il turno del Giocatore 2
                     if colonna is not None and riga is not None:  # Controllo valido
                         print(f"Hai cliccato sulla cella ({riga}, {colonna})")
-                        _, controllo = giocatore2.salva_punteggi(riga,punteggi)
+                        _, controllo= giocatore2.salva_punteggi(riga,punteggi)
                         if controllo:
                             giocatore2.salva_punteggi(riga, punteggi)  # Salva il punteggio per il Giocatore 2
                             suono_selezionepunteggio.play()
@@ -752,9 +761,6 @@ while run:
                                 dado.numero = 6
                                 tiro = False                          
                             print(f"Tabellone 2 aggiornato: {giocatore2.tabellone}")
-                    else:
-                        messaggio_errore = "Punteggio gia' salvato!"
-                        inizio_errore = pygame.time.get_ticks()
 
                 if rect_menu.collidepoint(event.pos):
                     schermata = 'menu'
@@ -765,15 +771,16 @@ while run:
                 if rect_opzioni.collidepoint(event.pos):
                     schermata = 'opzioni'
 
-        if messaggio_errore:
-            tempo_trascorso = pygame.time.get_ticks() - inizio_errore
-            if tempo_trascorso < 3000:
-                alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
-                superfice_errore = font.render(messaggio_errore, True, beige)
-                superfice_errore.set_alpha(alpha)
-                screen.blit(superfice_errore, (10,20))
-            else:
-                messaggio_errore = None
+        # if messaggio_errore:
+        #     tempo_trascorso = pygame.time.get_ticks() - inizio_errore
+        #     if tempo_trascorso < 3000:
+        #         alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
+        #         superfice_errore = font.render(messaggio_errore, True, beige)
+        #         superfice_errore.set_alpha(alpha)
+        #         screen.blit(superfice_errore, (10,20))
+        #     else:
+        #         messaggio_errore = None
+            
         
         # Mostra il turno corrente sullo schermo
         if turno:
