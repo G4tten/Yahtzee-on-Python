@@ -298,6 +298,7 @@ pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
 suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
 suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+suono_vittoria.set_volume(0.3)
 suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
 #Effetto select
 suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
@@ -312,6 +313,8 @@ while run:
 
     if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
 
+        pygame.mixer.music.stop() #ferma la musica di background
+
         if giocatore1.totale > giocatore2.totale:
             screen.fill(blu)
             suono_vittoria.play()
@@ -319,7 +322,7 @@ while run:
                 vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
             else:
                 vittoria = font_grande.render("GIOCATORE 1, hai vinto ! !", True, white)
-            # screen.blit(vittoria, (300,350))
+
         elif giocatore2.totale > giocatore1.totale:
             screen.fill(red)
             suono_vittoria.play()
@@ -327,11 +330,9 @@ while run:
                 vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
             else:
                 vittoria = font_grande
-            # screen.blit(vittoria, (300,350))
         else:
             screen.fill(beige)
             vittoria = font_grande.render("Pareggio ! : (", True, gray)
-            # screen.blit(vittoria, (400,350))
 
         vittoria_rect = vittoria.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2))
         screen.blit(vittoria, vittoria_rect)
