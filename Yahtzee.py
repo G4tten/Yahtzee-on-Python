@@ -15,6 +15,7 @@ pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 font = pygame.font.Font('font/Casino.ttf', 28) # Imposta la dimensione del font a 28
 font_grande = pygame.font.Font('font/Casino.ttf',60) # Imposta la dimensione del font a 60
 font_titolo = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 120
+font_regole = pygame.font.Font("font/Casino.ttf", 17) # Imposta la dimensione del font a 17
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
