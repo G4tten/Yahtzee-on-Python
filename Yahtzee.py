@@ -740,6 +740,15 @@ while run:
                         messaggio_errore = f"Combinazione utilizzata"
                         inizio_errore = pygame.time.get_ticks()
 
+                if rect_menu.collidepoint(event.pos):
+                    schermata = 'menu'
+                
+                if rect_regole.collidepoint(event.pos):
+                    schermata = 'regole'
+
+                if rect_opzioni.collidepoint(event.pos):
+                    schermata = 'opzioni'
+
         if messaggio_errore:
             tempo_trascorso = pygame.time.get_ticks() - inizio_errore
             if tempo_trascorso < 3000:
