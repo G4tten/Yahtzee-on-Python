@@ -4,11 +4,11 @@ import pygame
 pygame.init()  # Inizializzazione del modulo Pygame
 
 #Schermo
-screen_widht = 1200 #larghezza schermo
+screen_width = 1200 #larghezza schermo
 screen_height = 750 #altezza schermo
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((screen_widht, screen_height)) #impostiamo lo schermo con le grandezze precedentemente definite
+screen = pygame.display.set_mode((screen_width, screen_height)) #impostiamo lo schermo con le grandezze precedentemente definite
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 
 # Font
@@ -315,17 +315,26 @@ while run:
         if giocatore1.totale > giocatore2.totale:
             screen.fill(blu)
             suono_vittoria.play()
-            vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
-            screen.blit(vittoria, (300,350))
+            if giocatore1.nome:
+                vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
+            else:
+                vittoria = font_grande.render("GIOCATORE 1, hai vinto ! !", True, white)
+            # screen.blit(vittoria, (300,350))
         elif giocatore2.totale > giocatore1.totale:
             screen.fill(red)
             suono_vittoria.play()
-            vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
-            screen.blit(vittoria, (300,350))
+            if giocatore2.nome:
+                vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
+            else:
+                vittoria = font_grande
+            # screen.blit(vittoria, (300,350))
         else:
             screen.fill(beige)
             vittoria = font_grande.render("Pareggio ! : (", True, gray)
-            screen.blit(vittoria, (400,350))
+            # screen.blit(vittoria, (400,350))
+
+        vittoria_rect = vittoria.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2))
+        screen.blit(vittoria, vittoria_rect)
 
         pygame.display.flip()
         pygame.time.wait(5000)
@@ -341,17 +350,17 @@ while run:
         screen.blit(sfondo, (0, 0))
 
         # Crea una superficie trasparente per il contenitore
-        surface = pygame.Surface((screen_widht, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
+        surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
 
         # Rettangoli per i campi di input e il pulsante Play
-        rect_contenitore = pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
-        rect_bordocontenitore= pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
-        rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
-        rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
-        rect_bordo1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
-        rect_bordo2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
-        rect_play = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
-        rect_bordoplay = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_contenitore = pygame.Rect((screen_width - 450) // 2, 200, 450, 350)
+        rect_bordocontenitore= pygame.Rect((screen_width - 450) // 2, 200, 450, 350)
+        rect_giocatore1 = pygame.Rect((screen_width - 300) // 2, 280, 300, 60)
+        rect_giocatore2 = pygame.Rect((screen_width - 300) // 2, 360, 300, 60)
+        rect_bordo1 = pygame.Rect((screen_width - 300) // 2, 280, 300, 60)
+        rect_bordo2 = pygame.Rect((screen_width - 300) // 2, 360, 300, 60)
+        rect_play = pygame.Rect((screen_width - 120) // 2, 450, 120, 60)
+        rect_bordoplay = pygame.Rect((screen_width - 120) // 2, 450, 120, 60)
         rect_opzioni = pygame.Rect (680,455,120,50)
         rect_bordopzioni = pygame.Rect (680,455,120,50)
         rect_regole= pygame.Rect (400,455,120,50)
@@ -378,11 +387,11 @@ while run:
 
         # Disegna il titolo
         title_text = font_titolo.render("YAHTZEE", True, white)
-        screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
+        screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, 50))
 
         # sottotitolo
         instruction_text = font.render("INSERISCI GIOCATORI:", True, black)
-        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 230))
+        screen.blit(instruction_text, (screen_width // 2 - instruction_text.get_width() // 2, 230))
 
         # testo nei campi di input
         text_giocatore1 = font.render(giocatore1.nome, True, black)
@@ -471,16 +480,16 @@ while run:
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_indietro= pygame.Rect((screen_widht-120)//2,530,120,50)
-        rect_bordoindietro= pygame.Rect((screen_widht-120)//2,530,120,50)
-        rect_musica= pygame.Rect((screen_widht-180)//2, 160,180,90)
-        rect_bordomusica= pygame.Rect((screen_widht-180)//2, 160,180,90)
-        rect_effetti= pygame.Rect((screen_widht-180)//2, 280,180,90)
-        rect_bordoeffetti= pygame.Rect((screen_widht-180)//2, 280,180,90)
-        rect_crediti= pygame.Rect((screen_widht-180)//2, 400,180,90)
-        rect_bordocrediti= pygame.Rect((screen_widht-180)//2, 400,180,90)
+        rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_indietro= pygame.Rect((screen_width-120)//2,530,120,50)
+        rect_bordoindietro= pygame.Rect((screen_width-120)//2,530,120,50)
+        rect_musica= pygame.Rect((screen_width-180)//2, 160,180,90)
+        rect_bordomusica= pygame.Rect((screen_width-180)//2, 160,180,90)
+        rect_effetti= pygame.Rect((screen_width-180)//2, 280,180,90)
+        rect_bordoeffetti= pygame.Rect((screen_width-180)//2, 280,180,90)
+        rect_crediti= pygame.Rect((screen_width-180)//2, 400,180,90)
+        rect_bordocrediti= pygame.Rect((screen_width-180)//2, 400,180,90)
 
         color_musica= bordeaux if input_musica else gray
         color_effetti= bordeaux if input_effetti else gray
@@ -558,14 +567,14 @@ while run:
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_regolebase= pygame.Rect((screen_widht-300)//2, 170,300,150)
-        rect_bordoregoleb= pygame.Rect((screen_widht-300)//2, 170,300,135)
-        rect_regolecomplesse= pygame.Rect((screen_widht-330)//2, 350,330,190)
-        rect_bordoregolec= pygame.Rect((screen_widht-330)//2, 350,330,190)
-        rect_indietro= pygame.Rect((screen_widht-120)//2,550,120,50)
-        rect_bordoindietro= pygame.Rect((screen_widht-120)//2,550,120,50)
+        rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_regolebase= pygame.Rect((screen_width-300)//2, 170,300,150)
+        rect_bordoregoleb= pygame.Rect((screen_width-300)//2, 170,300,135)
+        rect_regolecomplesse= pygame.Rect((screen_width-330)//2, 350,330,190)
+        rect_bordoregolec= pygame.Rect((screen_width-330)//2, 350,330,190)
+        rect_indietro= pygame.Rect((screen_width-120)//2,550,120,50)
+        rect_bordoindietro= pygame.Rect((screen_width-120)//2,550,120,50)
         
         #tutti i pulsanti
         
