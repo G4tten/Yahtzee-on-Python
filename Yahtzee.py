@@ -103,11 +103,11 @@ class Giocatore:
     def mostra_messaggio_errore(self, screen, font, beige):
             if self.messaggio_errore and self.inizio_errore is not None:
                 tempo_trascorso = pygame.time.get_ticks() - self.inizio_errore
-                if tempo_trascorso < 3000:
-                    alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
+                if tempo_trascorso < 4000:
+                    alpha = max(0, 255 - int((tempo_trascorso / 4000) * 255))
                     superfice_errore = font.render(self.messaggio_errore, True, beige)
                     superfice_errore.set_alpha(alpha)
-                    screen.blit(superfice_errore, (10,20))
+                    screen.blit(superfice_errore, (40,40))
                 else:
                     self.messaggio_errore = None
                     self.inizio_errore = None 
@@ -538,7 +538,6 @@ while run:
                         suono_deselect.set_volume(0.0)
                         suono_vittoria.set_volume(0.0)
                         suono_inizio.set_volume(0.0)
-
                     else:
                         input_effetti = True
                         suono_roll.set_volume(0.5)
@@ -628,13 +627,11 @@ while run:
             # Carica lo sfondo 1
             sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
             screen.blit(sfondo, (0, 0))
-            # if giocatore1.messaggio_errore:
             giocatore1.mostra_messaggio_errore(screen, font, beige)
         else:
             # Carica lo sfondo 2
             sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
             screen.blit(sfondo, (0, 0))
-            # if giocatore2.messaggio_errore:
             giocatore2.mostra_messaggio_errore(screen, font, beige)
         
         rect_menu= pygame.Rect(850,50,120,50)
@@ -694,6 +691,7 @@ while run:
             
             if event.type == pygame.MOUSEBUTTONDOWN:  # Evento di clic del mouse
                 mouse_x, mouse_y = pygame.mouse.get_pos()  # Ottieni la posizione del mouse
+
                 # Controllo se il pulsante "Tira!" è stato cliccato
                 if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                     tiro = True  # Avvia il tiro dei dadi
@@ -783,7 +781,7 @@ while run:
                 if combinazione in giocatore1.tabellone:  # Punteggi assegnati
                     testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
                     screen.blit(testo_punteggio1, (x_pos1, y1_offset))
-                else:  # Anteprima dei punteggi non assegnati
+                elif any(check_tiro):  # Anteprima dei punteggi non assegnati
                     testo_punteggio1 = font.render(f"{punteggio}", True, gray)
                     screen.blit(testo_punteggio1, (x_pos1, y1_offset))
                 y1_offset += 50
@@ -798,7 +796,7 @@ while run:
                 if combinazione in giocatore2.tabellone:  # Punteggi assegnati
                     testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
                     screen.blit(testo_punteggio2, (x_pos2, y2_offset))
-                else:  # Anteprima dei punteggi non assegnati
+                elif any(check_tiro):  # Anteprima dei punteggi non assegnati
                     testo_punteggio2 = font.render(f"{punteggio}", True, gray)
                     screen.blit(testo_punteggio2, (x_pos2, y2_offset))
                 y2_offset += 50
