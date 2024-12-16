@@ -1,7 +1,9 @@
+#Librerie
 import random
 import pygame
 
-pygame.init()  # Inizializzazione del modulo Pygame
+# Inizializzazione del modulo Pygame
+pygame.init()
 
 #Schermo
 screen_width = 1200 #larghezza schermo
@@ -12,17 +14,18 @@ screen = pygame.display.set_mode((screen_width, screen_height)) #impostiamo lo s
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 
 # Font
-font = pygame.font.Font('font/Casino.ttf', 28) # Imposta la dimensione del font a 28
-font_grande = pygame.font.Font('font/Casino.ttf',60) # Imposta la dimensione del font a 60
-font_titolo = pygame.font.Font("font/Casino.ttf", 120)  # Imposta la dimensione del font a 120
-font_regole = pygame.font.Font("font/Casino.ttf", 17) # Imposta la dimensione del font a 17
+# Imposta lo stile (font/Casino.ttf) e la dimensione del font
+font = pygame.font.Font('font/Casino.ttf', 28)
+font_grande = pygame.font.Font('font/Casino.ttf',60)
+font_titolo = pygame.font.Font("font/Casino.ttf", 120)
+font_regole = pygame.font.Font("font/Casino.ttf", 17)
 
 # Palette di colori da utilizzare nel gioco
 teal = (37, 113, 128)
 beige = (242, 229, 191)
 dark_beige = (194, 183, 153)
-red= (191,37,57)
-blu= (36,79,131)
+red = (191,37,57)
+blu = (36,79,131)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -39,6 +42,7 @@ immagini_dadi = [
 ]
 
 # Ridimensionamento delle immagini dei dadi
+#Per ogni immagine in immagini_dadi, la ridimensiona a 100x100
 resize_immagine = [pygame.transform.scale(img, (100, 100)) for img in immagini_dadi]
 
 #Caricamento delle immagini dei tiri
@@ -50,7 +54,8 @@ immagini_tiri = [
 # Ridimensionamento delle immagini del numero di tiri disponibili
 resize_immagine_t = [pygame.transform.scale(img, (30,30)) for img in immagini_tiri]
 
-check_tiro = [False, False, False] #lista per verificare quanti tiri sono stati fatti
+#Lista per verificare quanti tiri sono stati fatti
+check_tiro = [False, False, False]
 
 ###################################################################################################################################################
 
@@ -62,6 +67,7 @@ class Giocatore:
         self.messaggio_errore = None
         self.inizio_errore = None
 
+    #Funzione per salvare i punteggi sul tabellone
     def salva_punteggi(self, riga, punteggi):
         # Mappa delle righe per associare il rigo a una chiave del tabellone
         riga_to_chiave = {
@@ -70,14 +76,15 @@ class Giocatore:
             8: "Full", 9: "Scala", 10: "Yahtzee"
         }
 
+        #Variabile per il passaggio turno
         controllo = True
 
  
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
-            chiave = riga_to_chiave[riga]
+            chiave = riga_to_chiave[riga] #chiave prende il nome della combinazione corrispondente al numero della riga
 
-            # Aggiungere solo se la chiave non è già presente nel tabellone
+            # Aggiungere solo se la combinazione non è già presente nel tabellone
             if chiave not in self.tabellone:
                 self.tabellone[chiave] = punteggi.get(chiave)  # Preleva il punteggio
                 self.totale += punteggi.get(chiave)  # Aggiorna il totale punti
@@ -89,19 +96,28 @@ class Giocatore:
                 controllo = True
                 self.messaggio_errore = None
                 self.inizio_errore = None
-            else:
+            else: #se la combinazione è presente nel tabellone
                 self.messaggio_errore = "Punteggio gia' salvato!"
                 self.inizio_errore = pygame.time.get_ticks()
                 controllo = False
 
-
         return self.tabellone, controllo
     
+    #Funzione per mostrare un messaggio di errore nel momento in cui viene cliccato un punteggio già salvato
     def mostra_messaggio_errore(self, screen, font, beige):
+            #se il messaggio di errore e il momento di inzio errore sono stati impostati
             if self.messaggio_errore and self.inizio_errore is not None:
-                tempo_trascorso = pygame.time.get_ticks() - self.inizio_errore
-                if tempo_trascorso < 4000:
-                    alpha = max(0, 255 - int((tempo_trascorso / 4000) * 255))
+                tempo_trascorso = pygame.time.get_ticks() - self.inizio_errore #calcolo del tempo trascorso dalla prima comparsa del messaggio su schermo
+                if tempo_trascorso < 4000: #se tempo trascorso è minore di 4 sec
+                    alpha = max(0, 255 - int((tempo_trascorso / 4000) * 255))   #impostazione dell'alpha che a ogni secondo diminuisce
+                                                                                #tempo_trascorso / 4000 : 
+                                                                                    #calcola il tempo trascorso rispetto i 4 sec
+                                                                                #(tempo_trascorso / 4000) * 255 :
+                                                                                    #moltiplica il valore per 255 per trovare il valore alpha corrispondente
+                                                                                #255 - int((tempo_trascorso / 4000) * 255) :
+                                                                                    #sottrae a 255 (valore massimo dell'aplha) il valore appena calcolato in modo tale da avere un effetto dissolvenza
+                                                                                #max(0, 255 - int((tempo_trascorso / 4000) * 255)) :
+                                                                                    #assicura che il valore alpha non vada mai sotto 0, impostando 0 come minimo
                     superfice_errore = font.render(self.messaggio_errore, True, beige)
                     superfice_errore.set_alpha(alpha)
                     screen.blit(superfice_errore, (40,40))
@@ -131,7 +147,11 @@ class Dado:
         larghezza_dado = 100
         margine = 20 #margine per ogni dado
 
+        #pos[0] equivale alla x del mouse
+        #pos[1] equivale alla y del mouse
+
         for dado in dadi:
+            #se la x del mouse si trova tra l'inizio dell'immagine del dado (dado.x_pos) e la fine dell'immagine del dado (dado.x_pos + larghezza dado) [stessa cosa per l'y]
             if dado.x_pos <= pos[0] <= dado.x_pos + larghezza_dado + margine and dado.y_pos <= pos[1] <= dado.y_pos + larghezza_dado:
                 if not dado.selezionato:
                     suono_select.play()
@@ -144,7 +164,7 @@ class Dado:
         self.numero = random.randint(1, 6)
 
 # Creazione di cinque dadi con posizioni iniziali
-dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)]
+dadi = [Dado(550 + i * 120, 350, 6, False) for i in range(5)] #x, y, numero del dado, stato se è selezionato o no
 
 ################################################################################################################################################### 
 
@@ -226,22 +246,29 @@ combinazioni = [
 
 # Dizionario per tracciare i punteggi
 punteggi = {} 
+
 # Funzione per calcolare i punteggi basati sui dadi tirati
 def calcola_punteggi(dadi):
-    conteggio_dadi = [0] * 6  # Contatore delle occorrenze di ogni numero
+    conteggio_dadi = [0] * 6    # Contatore delle occorrenze di ogni numero
+                                #crea una lista con all'interno sei 0 [0, 0, 0, 0, 0, 0]
+
     for dado in dadi:
-        conteggio_dadi[dado.numero - 1] += 1
+        conteggio_dadi[dado.numero - 1] += 1    #per ogni dado all'interno della lista dadi, prende il numero del dado e sottrae 1 per trovare la posizione corrispondente nella lista
+                                                #trovato l'indice del dado aumenta quel valore di 1 per indicare che è presente un dado di quel valore nel pull di dadi appena tirati
 
     # Calcolo dei punteggi per ogni combinazione
-    punteggi["Uno"] = conteggio_dadi[0] * 1
+    #Per le combinazioni di base:
+    #il valore del numero x quante volte è presente quel numero nel pull di dadi
+    punteggi["Uno"] = conteggio_dadi[0] * 1 #es. prende il numero di dadi presenti con il numero 1 e li moltiplica per 1
     punteggi["Due"] = conteggio_dadi[1] * 2
     punteggi["Tre"] = conteggio_dadi[2] * 3
     punteggi["Quattro"] = conteggio_dadi[3] * 4
     punteggi["Cinque"] = conteggio_dadi[4] * 5
     punteggi["Sei"] = conteggio_dadi[5] * 6
     
+    #se conteggio_dadi su qualsiasi posizione ha un numero di occorrenze pari o maggiore a 3 significa che un numero è presente minimo 3 volte nel pull che abbiamo appena lanciato, quindi è avvenuto un tris
     if max(conteggio_dadi) >= 3:
-        punteggi["Tris"] = sum([dado.numero for dado in dadi]) 
+        punteggi["Tris"] = sum([dado.numero for dado in dadi]) #fa la somma di tutti i dadi
     else:
         punteggi["Tris"] = 0
 
@@ -250,16 +277,19 @@ def calcola_punteggi(dadi):
     else:
         punteggi["Quadris"] = 0
 
+    #Se in conteggio dadi è presente un'occorrenza da 3 e una da 2 
     if 3 in conteggio_dadi and 2 in conteggio_dadi:
         punteggi["Full"] = 25
     else:
         punteggi["Full"] = 0
     
+    #se è presente una scala da 1 a 5 o da 2 a 6
     if sorted(set([dado.numero for dado in dadi])) in [list(range(1, 6)), list(range(2, 7))]: 
         punteggi["Scala"] = 40
     else:
         punteggi["Scala"] = 0
     
+    #se sono tutti dadi uguali
     if max(conteggio_dadi) == 5:
         punteggi["Yahtzee"] = 50
     else:
