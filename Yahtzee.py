@@ -94,7 +94,7 @@ class Giocatore:
                 self.inizio_errore = None
             else:
                 self.messaggio_errore = "Punteggio gia' salvato!"
-                self.inizio_errore = pygame.time.get_ticks() #questa variabbbbbbile prende lo stesso identico momento e quindi la dissolvenza non avviene
+                self.inizio_errore = pygame.time.get_ticks()
                 controllo = False
 
 
@@ -195,7 +195,7 @@ def rileva_clic(x, y):
         # Calcola la colonna e la riga cliccate
         colonna = x_relativo // larghezza_cella
         riga = y_relativo // altezza_cella
-        
+
         print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
         return colonna, riga
     
@@ -524,7 +524,6 @@ while run:
                     if input_musica:
                         input_musica= False
                         pygame.mixer.music.stop()
-
                     else :
                         input_musica = True
                         pygame.mixer.music.play(-1,0.0)
@@ -546,6 +545,39 @@ while run:
                         suono_deselect.set_volume(0.5)
                         suono_vittoria.set_volume(0.5)
                         suono_inizio.set_volume(0.5)
+
+                if rect_crediti.collidepoint(event.pos):
+                    schermata = "crediti"
+
+        pygame.display.flip()
+
+    elif schermata == "crediti":
+        sfondo = pygame.image.load("immagini/sfondo.png")
+        screen.blit(sfondo, (0, 0))
+
+        rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_indietro= pygame.Rect((screen_width-120)//2,530,120,50)
+        rect_bordoindietro= pygame.Rect((screen_width-120)//2,530,120,50)
+
+        pygame.draw.rect(screen, white, rect_contenitore2,0,8)
+        pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
+        pygame.draw.rect(screen, teal ,rect_indietro,0,8 )
+        pygame.draw.rect(screen, black, rect_bordoindietro, 5, 8)
+
+        indietro_text= font.render("INDIETRO", True, white)
+        screen.blit(indietro_text, (rect_indietro.x + 10, rect_indietro.y + 13))
+
+        sviluppatori_text = font.render("SVILUPPATORI", True, black)
+        screen.blit(sviluppatori_text, (rect_contenitore2.x + 20, rect_contenitore2.y + 10))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if rect_indietro.collidepoint(event.pos):
+                    schermata = "opzioni"
 
         pygame.display.flip()
 
