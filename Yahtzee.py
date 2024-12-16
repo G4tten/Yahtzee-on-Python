@@ -275,9 +275,10 @@ tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
 max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
-schermata= "menu" #menu o gioco (le due fasi)
+schermata= "crediti" #menu o gioco (le due fasi)
 inizio_errore = None
 in_game= False
+versione = "1.0.0"
 
 # oggetto dei giocatori
 giocatore1= Giocatore("")
@@ -575,8 +576,25 @@ while run:
         indietro_text= font.render("INDIETRO", True, white)
         screen.blit(indietro_text, (rect_indietro.x + 10, rect_indietro.y + 13))
 
+        # Titolo "SVILUPPATORI"
         sviluppatori_text = font.render("SVILUPPATORI", True, black)
-        screen.blit(sviluppatori_text, (rect_contenitore2.x + 20, rect_contenitore2.y + 10))
+        sviluppatori_text_rect = sviluppatori_text.get_rect(center=(rect_contenitore2.centerx, rect_contenitore2.y + 130))
+        screen.blit(sviluppatori_text, sviluppatori_text_rect.topleft)
+
+        # Nomi degli sviluppatori
+        gatten_text = font.render("Ludovica Gatti", True, black)
+        luis_text = font.render("Luigi Gorgone", True, black)
+
+        gatten_text_rect = gatten_text.get_rect(center=(rect_contenitore2.centerx, rect_contenitore2.y + 180))
+        luis_text_rect = luis_text.get_rect(center=(rect_contenitore2.centerx, rect_contenitore2.y + 215))
+
+        screen.blit(gatten_text, gatten_text_rect.topleft)
+        screen.blit(luis_text, luis_text_rect.topleft)
+
+        versione_text = font.render(f"Versione {versione}", True, black)
+        versione_text_rect = versione_text.get_rect(center=(rect_contenitore2.centerx, rect_contenitore2.y + 280))
+
+        screen.blit(versione_text, versione_text_rect.topleft)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
