@@ -4,11 +4,11 @@ import pygame
 pygame.init()  # Inizializzazione del modulo Pygame
 
 #Schermo
-screen_widht = 1200 #larghezza schermo
+screen_width = 1200 #larghezza schermo
 screen_height = 750 #altezza schermo
 
 # Creazione della finestra di gioco
-screen = pygame.display.set_mode((screen_widht, screen_height)) #impostiamo lo schermo con le grandezze precedentemente definite
+screen = pygame.display.set_mode((screen_width, screen_height)) #impostiamo lo schermo con le grandezze precedentemente definite
 pygame.display.set_caption("Yahtzee Game")  # Titolo della finestra
 
 # Font
@@ -75,7 +75,6 @@ class Giocatore:
 
         controllo = True
 
-
         #DA RIVEDERE IL CONTROLLO SE è STATA GIA' SALVATA O MENO (magari invece di return si potrebbe impostare una variabile)
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
@@ -104,11 +103,11 @@ class Giocatore:
     def mostra_messaggio_errore(self, screen, font, beige):
             if self.messaggio_errore and self.inizio_errore is not None:
                 tempo_trascorso = pygame.time.get_ticks() - self.inizio_errore
-                if tempo_trascorso < 3000:
-                    alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
+                if tempo_trascorso < 4000:
+                    alpha = max(0, 255 - int((tempo_trascorso / 4000) * 255))
                     superfice_errore = font.render(self.messaggio_errore, True, beige)
                     superfice_errore.set_alpha(alpha)
-                    screen.blit(superfice_errore, (10,20))
+                    screen.blit(superfice_errore, (40,40))
                 else:
                     self.messaggio_errore = None
                     self.inizio_errore = None 
@@ -299,6 +298,7 @@ pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
 suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
 suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+suono_vittoria.set_volume(0.3)
 suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
 #Effetto select
 suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
@@ -307,26 +307,34 @@ suono_select.set_volume(0.3)
 suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
 suono_deselect.set_volume(0.3)
 
-
 # Ciclo principale del gioco (game loop)
 while run:
 
     if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
 
+        pygame.mixer.music.stop() #ferma la musica di background
+
         if giocatore1.totale > giocatore2.totale:
             screen.fill(blu)
             suono_vittoria.play()
-            vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
-            screen.blit(vittoria, (300,350))
+            if giocatore1.nome:
+                vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
+            else:
+                vittoria = font_grande.render("GIOCATORE 1, hai vinto ! !", True, white)
+
         elif giocatore2.totale > giocatore1.totale:
             screen.fill(red)
             suono_vittoria.play()
-            vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
-            screen.blit(vittoria, (300,350))
+            if giocatore2.nome:
+                vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
+            else:
+                vittoria = font_grande
         else:
             screen.fill(beige)
             vittoria = font_grande.render("Pareggio ! : (", True, gray)
-            screen.blit(vittoria, (400,350))
+
+        vittoria_rect = vittoria.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2))
+        screen.blit(vittoria, vittoria_rect)
 
         pygame.display.flip()
         pygame.time.wait(5000)
@@ -334,7 +342,6 @@ while run:
         run = False
         break
     
-
     if schermata== "menu" :
 
         in_game= False
@@ -344,17 +351,17 @@ while run:
         screen.blit(sfondo, (0, 0))
 
         # Crea una superficie trasparente per il contenitore
-        surface = pygame.Surface((screen_widht, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
+        surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
 
         # Rettangoli per i campi di input e il pulsante Play
-        rect_contenitore = pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
-        rect_bordocontenitore= pygame.Rect((screen_widht - 450) // 2, 200, 450, 350)
-        rect_giocatore1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
-        rect_giocatore2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
-        rect_bordo1 = pygame.Rect((screen_widht - 300) // 2, 280, 300, 60)
-        rect_bordo2 = pygame.Rect((screen_widht - 300) // 2, 360, 300, 60)
-        rect_play = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
-        rect_bordoplay = pygame.Rect((screen_widht - 120) // 2, 450, 120, 60)
+        rect_contenitore = pygame.Rect((screen_width - 450) // 2, 200, 450, 350)
+        rect_bordocontenitore= pygame.Rect((screen_width - 450) // 2, 200, 450, 350)
+        rect_giocatore1 = pygame.Rect((screen_width - 300) // 2, 280, 300, 60)
+        rect_giocatore2 = pygame.Rect((screen_width - 300) // 2, 360, 300, 60)
+        rect_bordo1 = pygame.Rect((screen_width - 300) // 2, 280, 300, 60)
+        rect_bordo2 = pygame.Rect((screen_width - 300) // 2, 360, 300, 60)
+        rect_play = pygame.Rect((screen_width - 120) // 2, 450, 120, 60)
+        rect_bordoplay = pygame.Rect((screen_width - 120) // 2, 450, 120, 60)
         rect_opzioni = pygame.Rect (680,455,120,50)
         rect_bordopzioni = pygame.Rect (680,455,120,50)
         rect_regole= pygame.Rect (400,455,120,50)
@@ -378,14 +385,13 @@ while run:
         pygame.draw.rect(screen, black, rect_bordo1, 5, 8)
         pygame.draw.rect(screen, black, rect_bordo2, 5, 8)
 
-
         # Disegna il titolo
         title_text = font_titolo.render("YAHTZEE", True, white)
-        screen.blit(title_text, (screen_widht // 2 - title_text.get_width() // 2, 50))
+        screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, 50))
 
         # sottotitolo
         instruction_text = font.render("INSERISCI GIOCATORI:", True, black)
-        screen.blit(instruction_text, (screen_widht // 2 - instruction_text.get_width() // 2, 230))
+        screen.blit(instruction_text, (screen_width // 2 - instruction_text.get_width() // 2, 230))
 
         # testo nei campi di input
         text_giocatore1 = font.render(giocatore1.nome, True, black)
@@ -412,8 +418,6 @@ while run:
         regole_text= font.render("REGOLE", True, white)
         screen.blit(regole_text, (rect_regole.x + 15, rect_regole.y + 13))
 
-
-
         # Gestione degli eventi
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -438,7 +442,6 @@ while run:
                     input_attivo1 = False
                     input_attivo2 = False
                 
-
             if event.type == pygame.KEYDOWN:
                 # Scrittura nel campo attivo
                 if input_attivo1:
@@ -468,23 +471,22 @@ while run:
         # Aggiorna la finestra
         pygame.display.flip()
     
-    
     elif schermata == "opzioni":
         
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_indietro= pygame.Rect((screen_widht-120)//2,530,120,50)
-        rect_bordoindietro= pygame.Rect((screen_widht-120)//2,530,120,50)
-        rect_musica= pygame.Rect((screen_widht-180)//2, 160,180,90)
-        rect_bordomusica= pygame.Rect((screen_widht-180)//2, 160,180,90)
-        rect_effetti= pygame.Rect((screen_widht-180)//2, 280,180,90)
-        rect_bordoeffetti= pygame.Rect((screen_widht-180)//2, 280,180,90)
-        rect_crediti= pygame.Rect((screen_widht-180)//2, 400,180,90)
-        rect_bordocrediti= pygame.Rect((screen_widht-180)//2, 400,180,90)
+        rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_indietro= pygame.Rect((screen_width-120)//2,530,120,50)
+        rect_bordoindietro= pygame.Rect((screen_width-120)//2,530,120,50)
+        rect_musica= pygame.Rect((screen_width-180)//2, 160,180,90)
+        rect_bordomusica= pygame.Rect((screen_width-180)//2, 160,180,90)
+        rect_effetti= pygame.Rect((screen_width-180)//2, 280,180,90)
+        rect_bordoeffetti= pygame.Rect((screen_width-180)//2, 280,180,90)
+        rect_crediti= pygame.Rect((screen_width-180)//2, 400,180,90)
+        rect_bordocrediti= pygame.Rect((screen_width-180)//2, 400,180,90)
 
         color_musica= bordeaux if input_musica else gray
         color_effetti= bordeaux if input_effetti else gray
@@ -513,8 +515,6 @@ while run:
 
         crediti_text= font.render("CREDITI", True, white)
         screen.blit(crediti_text, (rect_crediti.x + 44, rect_crediti.y + 34))
-
-
 
         # Gestione degli eventi
         for event in pygame.event.get():
@@ -545,7 +545,6 @@ while run:
                         suono_deselect.set_volume(0.0)
                         suono_vittoria.set_volume(0.0)
                         suono_inizio.set_volume(0.0)
-
                     else:
                         input_effetti = True
                         suono_roll.set_volume(0.5)
@@ -555,8 +554,6 @@ while run:
                         suono_vittoria.set_volume(0.5)
                         suono_inizio.set_volume(0.5)
 
-
-
         pygame.display.flip()
 
     elif schermata == "regole":
@@ -565,17 +562,16 @@ while run:
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
-        rect_contenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_bordocontenitore2= pygame.Rect((screen_widht-400)//2, 120,400,500)
-        rect_regolebase= pygame.Rect((screen_widht-300)//2, 170,300,150)
-        rect_bordoregoleb= pygame.Rect((screen_widht-300)//2, 170,300,135)
-        rect_regolecomplesse= pygame.Rect((screen_widht-330)//2, 350,330,190)
-        rect_bordoregolec= pygame.Rect((screen_widht-330)//2, 350,330,190)
-        rect_indietro= pygame.Rect((screen_widht-120)//2,550,120,50)
-        rect_bordoindietro= pygame.Rect((screen_widht-120)//2,550,120,50)
+        rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
+        rect_regolebase= pygame.Rect((screen_width-300)//2, 170,300,150)
+        rect_bordoregoleb= pygame.Rect((screen_width-300)//2, 170,300,135)
+        rect_regolecomplesse= pygame.Rect((screen_width-330)//2, 350,330,190)
+        rect_bordoregolec= pygame.Rect((screen_width-330)//2, 350,330,190)
+        rect_indietro= pygame.Rect((screen_width-120)//2,550,120,50)
+        rect_bordoindietro= pygame.Rect((screen_width-120)//2,550,120,50)
         
         #tutti i pulsanti
-        
         pygame.draw.rect(screen, white, rect_contenitore2,0,8)
         pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
         pygame.draw.rect(screen, white, rect_regolebase,0,8)
@@ -594,7 +590,6 @@ while run:
 
         regolecomplesse_text= font.render ("COMBINAZIONI COMPLESSE", True, black)
         screen.blit(regolecomplesse_text, (rect_contenitore2.x + 40, rect_contenitore2.y + 200))
-
 
         #combinazioni base
         uno_text= font_regole.render ("1 : somma dei dadi che riportano 1", True, black)
@@ -636,8 +631,6 @@ while run:
 
         pygame.display.flip()
 
-
-
     elif schermata == "gioco" : 
 
         in_game = True
@@ -646,15 +639,12 @@ while run:
             # Carica lo sfondo 1
             sfondo = pygame.image.load("immagini/sfondo_giocatore1.png")
             screen.blit(sfondo, (0, 0))
-            # if giocatore1.messaggio_errore:
             giocatore1.mostra_messaggio_errore(screen, font, beige)
         else:
             # Carica lo sfondo 2
             sfondo = pygame.image.load("immagini/sfondo_giocatore2.png")
             screen.blit(sfondo, (0, 0))
-            # if giocatore2.messaggio_errore:
             giocatore2.mostra_messaggio_errore(screen, font, beige)
-
         
         rect_menu= pygame.Rect(850,50,120,50)
         rect_bordomenu= pygame.Rect(850,50,120,50)
@@ -662,7 +652,6 @@ while run:
         rect_bordoregole= pygame.Rect (1000,50,120,50)
         rect_opzioni= pygame.Rect (700,50,120,50)
         rect_bordopzioni= pygame.Rect (700,50,120,50)
-
 
         # pulsante regole
         pygame.draw.rect(screen, bordeaux, rect_regole,0,8)
@@ -681,9 +670,6 @@ while run:
         pygame.draw.rect(screen, black, rect_bordopzioni, 5, 8)
         opzioni_text= font.render("OPZIONI", True, white)
         screen.blit(opzioni_text, (rect_opzioni.x + 15, rect_opzioni.y + 13))
-
-
-
 
         # Disegna la griglia del tabellone
         disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
@@ -719,6 +705,7 @@ while run:
             
             if event.type == pygame.MOUSEBUTTONDOWN:  # Evento di clic del mouse
                 mouse_x, mouse_y = pygame.mouse.get_pos()  # Ottieni la posizione del mouse
+
                 # Controllo se il pulsante "Tira!" è stato cliccato
                 if tira_btn.collidepoint(event.pos) and counter < max_tiri:
                     tiro = True  # Avvia il tiro dei dadi
@@ -782,18 +769,7 @@ while run:
 
                 if rect_opzioni.collidepoint(event.pos):
                     schermata = 'opzioni'
-
-        # if messaggio_errore:
-        #     tempo_trascorso = pygame.time.get_ticks() - inizio_errore
-        #     if tempo_trascorso < 3000:
-        #         alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
-        #         superfice_errore = font.render(messaggio_errore, True, beige)
-        #         superfice_errore.set_alpha(alpha)
-        #         screen.blit(superfice_errore, (10,20))
-        #     else:
-        #         messaggio_errore = None
             
-        
         # Mostra il turno corrente sullo schermo
         if turno:
             if giocatore1.nome:
@@ -819,7 +795,7 @@ while run:
                 if combinazione in giocatore1.tabellone:  # Punteggi assegnati
                     testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
                     screen.blit(testo_punteggio1, (x_pos1, y1_offset))
-                else:  # Anteprima dei punteggi non assegnati
+                elif any(check_tiro):  # Anteprima dei punteggi non assegnati
                     testo_punteggio1 = font.render(f"{punteggio}", True, gray)
                     screen.blit(testo_punteggio1, (x_pos1, y1_offset))
                 y1_offset += 50
@@ -834,7 +810,7 @@ while run:
                 if combinazione in giocatore2.tabellone:  # Punteggi assegnati
                     testo_punteggio2 = font.render(f"{giocatore2.tabellone[combinazione]}", True, black)
                     screen.blit(testo_punteggio2, (x_pos2, y2_offset))
-                else:  # Anteprima dei punteggi non assegnati
+                elif any(check_tiro):  # Anteprima dei punteggi non assegnati
                     testo_punteggio2 = font.render(f"{punteggio}", True, gray)
                     screen.blit(testo_punteggio2, (x_pos2, y2_offset))
                 y2_offset += 50
