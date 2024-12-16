@@ -75,7 +75,6 @@ class Giocatore:
 
         controllo = True
 
-
         #DA RIVEDERE IL CONTROLLO SE è STATA GIA' SALVATA O MENO (magari invece di return si potrebbe impostare una variabile)
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
@@ -307,7 +306,6 @@ suono_select.set_volume(0.3)
 suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
 suono_deselect.set_volume(0.3)
 
-
 # Ciclo principale del gioco (game loop)
 while run:
 
@@ -343,7 +341,6 @@ while run:
         run = False
         break
     
-
     if schermata== "menu" :
 
         # Carica lo sfondo
@@ -385,7 +382,6 @@ while run:
         pygame.draw.rect(screen, black, rect_bordo1, 5, 8)
         pygame.draw.rect(screen, black, rect_bordo2, 5, 8)
 
-
         # Disegna il titolo
         title_text = font_titolo.render("YAHTZEE", True, white)
         screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, 50))
@@ -419,8 +415,6 @@ while run:
         regole_text= font.render("REGOLE", True, white)
         screen.blit(regole_text, (rect_regole.x + 15, rect_regole.y + 13))
 
-
-
         # Gestione degli eventi
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -445,7 +439,6 @@ while run:
                     input_attivo1 = False
                     input_attivo2 = False
                 
-
             if event.type == pygame.KEYDOWN:
                 # Scrittura nel campo attivo
                 if input_attivo1:
@@ -473,7 +466,6 @@ while run:
 
         # Aggiorna la finestra
         pygame.display.flip()
-    
     
     elif schermata == "opzioni":
         
@@ -520,8 +512,6 @@ while run:
         crediti_text= font.render("CREDITI", True, white)
         screen.blit(crediti_text, (rect_crediti.x + 44, rect_crediti.y + 34))
 
-
-
         # Gestione degli eventi
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -558,8 +548,6 @@ while run:
                         suono_vittoria.set_volume(0.5)
                         suono_inizio.set_volume(0.5)
 
-
-
         pygame.display.flip()
 
     elif schermata == "regole":
@@ -578,7 +566,6 @@ while run:
         rect_bordoindietro= pygame.Rect((screen_width-120)//2,550,120,50)
         
         #tutti i pulsanti
-        
         pygame.draw.rect(screen, white, rect_contenitore2,0,8)
         pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
         pygame.draw.rect(screen, white, rect_regolebase,0,8)
@@ -597,7 +584,6 @@ while run:
 
         regolecomplesse_text= font.render ("COMBINAZIONI COMPLESSE", True, black)
         screen.blit(regolecomplesse_text, (rect_contenitore2.x + 40, rect_contenitore2.y + 200))
-
 
         #combinazioni base
         uno_text= font_regole.render ("1 : somma dei dadi che riportano 1", True, black)
@@ -636,8 +622,6 @@ while run:
 
         pygame.display.flip()
 
-
-
     elif schermata == "gioco" : 
         # Aggiornamento dello sfondo in base al turno del giocatore
         if turno:
@@ -652,7 +636,6 @@ while run:
             screen.blit(sfondo, (0, 0))
             # if giocatore2.messaggio_errore:
             giocatore2.mostra_messaggio_errore(screen, font, beige)
-
         
         rect_menu= pygame.Rect(850,50,120,50)
         rect_bordomenu= pygame.Rect(850,50,120,50)
@@ -660,7 +643,6 @@ while run:
         rect_bordoregole= pygame.Rect (1000,50,120,50)
         rect_opzioni= pygame.Rect (700,50,120,50)
         rect_bordopzioni= pygame.Rect (700,50,120,50)
-
 
         # pulsante regole
         pygame.draw.rect(screen, bordeaux, rect_regole,0,8)
@@ -679,9 +661,6 @@ while run:
         pygame.draw.rect(screen, black, rect_bordopzioni, 5, 8)
         opzioni_text= font.render("OPZIONI", True, white)
         screen.blit(opzioni_text, (rect_opzioni.x + 15, rect_opzioni.y + 13))
-
-
-
 
         # Disegna la griglia del tabellone
         disegna_griglia(screen, righe, colonne, larghezza_cella, altezza_cella, 65, 100)
@@ -778,18 +757,7 @@ while run:
 
                 if rect_opzioni.collidepoint(event.pos):
                     schermata = 'opzioni'
-
-        # if messaggio_errore:
-        #     tempo_trascorso = pygame.time.get_ticks() - inizio_errore
-        #     if tempo_trascorso < 3000:
-        #         alpha = max(0, 255 - int((tempo_trascorso / 3000) * 255))
-        #         superfice_errore = font.render(messaggio_errore, True, beige)
-        #         superfice_errore.set_alpha(alpha)
-        #         screen.blit(superfice_errore, (10,20))
-        #     else:
-        #         messaggio_errore = None
             
-        
         # Mostra il turno corrente sullo schermo
         if turno:
             if giocatore1.nome:
