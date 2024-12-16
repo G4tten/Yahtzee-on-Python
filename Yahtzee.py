@@ -278,6 +278,7 @@ max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
 schermata= "menu" #menu o gioco (le due fasi)
 inizio_errore = None
+in_game= False
 
 # oggetto dei giocatori
 giocatore1= Giocatore("")
@@ -335,6 +336,8 @@ while run:
     
 
     if schermata== "menu" :
+
+        in_game= False
 
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
@@ -444,7 +447,7 @@ while run:
                     elif event.key == pygame.K_TAB:  # Passa al campo giocatore 2
                         input_attivo1 = False
                         input_attivo2 = True
-                    else:
+                    elif len(giocatore1.nome) < 10 and event.unicode.isprintable():  # Controllo della lunghezza e caratteri validi
                         giocatore1.nome += event.unicode
                 elif input_attivo2:
                     if event.key == pygame.K_BACKSPACE:
@@ -455,11 +458,12 @@ while run:
                     elif event.key == pygame.K_RETURN:
                         schermata = "gioco"
                         suono_inizio.play()
-                    else:
+                    elif len(giocatore2.nome) < 10 and event.unicode.isprintable():  # Controllo della lunghezza e caratteri validi
                         giocatore2.nome += event.unicode
                 if event.key == pygame.K_RETURN:
                     schermata = "gioco"
                     suono_inizio.play()
+
 
         # Aggiorna la finestra
         pygame.display.flip()
@@ -519,7 +523,10 @@ while run:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if rect_indietro.collidepoint(event.pos):
-                    schermata = "menu"
+                    if in_game:
+                        schermata = "gioco"
+                    else:
+                        schermata = "menu"
                 if rect_musica.collidepoint(event.pos):
                     if input_musica:
                         input_musica= False
@@ -622,13 +629,18 @@ while run:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if rect_indietro.collidepoint(event.pos):
-                    schermata = "menu"
+                    if in_game:
+                        schermata = "gioco"
+                    else:
+                        schermata = "menu"
 
         pygame.display.flip()
 
 
 
     elif schermata == "gioco" : 
+
+        in_game = True
         # Aggiornamento dello sfondo in base al turno del giocatore
         if turno:
             # Carica lo sfondo 1
@@ -693,7 +705,9 @@ while run:
             btn_pos = [760, 580]  # Posizione del testo
 
         # Disegna il pulsante "Tira!" con il colore e testo aggiornati
-        tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100])  # Rettangolo del pulsante
+        tira_btn = pygame.draw.rect(screen, tira_btn_colore, [700, 550, 250, 100],0,8)  # Rettangolo del pulsante
+        bordo_btn = pygame.draw.rect(screen, black, [700, 550, 250, 100],3,8)  # Rettangolo del pulsante
+
 
         # Mostra il testo del pulsante "Tira!" sopra il pulsante
         screen.blit(btn_testo, btn_pos)
