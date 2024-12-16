@@ -23,13 +23,10 @@ beige = (242, 229, 191)
 dark_beige = (194, 183, 153)
 red= (191,37,57)
 blu= (36,79,131)
-# orange = (253, 139, 81)
-# dark_orange = (180, 100, 50)
 bordeaux = (203, 96, 64)
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (128, 128, 128)
-# background = beige  # Colore di sfondo
 
 # Caricamento delle immagini dei dadi
 immagini_dadi = [
@@ -75,7 +72,7 @@ class Giocatore:
 
         controllo = True
 
-        #DA RIVEDERE IL CONTROLLO SE è STATA GIA' SALVATA O MENO (magari invece di return si potrebbe impostare una variabile)
+ 
         # Controllare che la riga sia valida
         if riga in riga_to_chiave:
             chiave = riga_to_chiave[riga]
@@ -156,52 +153,68 @@ larghezza_cella = 150
 altezza_cella = 50
 righe = 12
 colonne = 3
-offset_x = 65  # Offset orizzontale della griglia
-offset_y = 100  # Offset verticale della griglia
+offset_x = 65  # Offset orizzontale della griglia (partenza della x)
+offset_y = 100  # Offset verticale della griglia (partenza della y)
 
 # Funzione per disegnare la griglia del tabellone
 def disegna_griglia(schermo, righe, colonne, larghezza_cella, altezza_cella, x_inizio, y_inizio):
+    
+    # Imposta il colore della griglia, in questo caso il colore delle linee di separazione
     colore_griglia = black  # Colore delle linee della griglia
 
-    # Disegna lo sfondo del tabellone
+    # Disegna lo sfondo del tabellone, che sarà un rettangolo bianco che copre l'intera area della griglia
+    # Il rettangolo ha come dimensioni il numero di colonne * larghezza delle celle e il numero di righe * altezza delle celle
     sfondo_griglia = pygame.Rect(x_inizio, y_inizio, colonne * larghezza_cella, righe * altezza_cella)
-    pygame.draw.rect(schermo, white, sfondo_griglia)
+    pygame.draw.rect(schermo, white, sfondo_griglia)  # Colora il rettangolo di bianco (background)
 
-    # Disegna ogni cella della griglia
-    for riga in range(righe):
-        for colonna in range(colonne):
+    # Disegna ogni singola cella della griglia. Ogni cella sarà un rettangolo che si trova all'interno
+    # del tabellone, calcolato in base alla posizione iniziale e alla dimensione delle celle.
+    for riga in range(righe):  # Cicla attraverso le righe
+        for colonna in range(colonne):  # Cicla attraverso le colonne
             rettangolo = pygame.Rect(
-                x_inizio + colonna * larghezza_cella, 
-                y_inizio + riga * altezza_cella, 
-                larghezza_cella, 
-                altezza_cella
+                x_inizio + colonna * larghezza_cella,  # Calcola la posizione X della cella
+                y_inizio + riga * altezza_cella,  # Calcola la posizione Y della cella
+                larghezza_cella,  # Larghezza della cella
+                altezza_cella  # Altezza della cella
             )
+            # Disegna il rettangolo per la cella corrente con un bordo di spessore 3
             pygame.draw.rect(schermo, colore_griglia, rettangolo, 3)
 
-    # Aggiungi il testo delle combinazioni nella prima colonna
+    # Aggiungi il testo delle combinazioni nella prima colonna della griglia.
+    # L'indice 'enumerate' permette di ottenere sia l'indice che la combinazione per ogni riga.
     for indice, combinazione in enumerate(combinazioni):
-        if indice < righe:  # Assicurati di non eccedere il numero di righe
-            testo = font.render(combinazione, True, black)  # Renderizza il testo
-            schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))  # Posiziona il testo con un piccolo margine
+        if indice < righe:  # Verifica se l'indice non supera il numero di righe
+            # Renderizza il testo da inserire nella cella
+            testo = font.render(combinazione, True, black)  # Crea il testo in nero
+            # Posiziona il testo nella colonna di sinistra, con un piccolo margine (10 pixel)
+            schermo.blit(testo, (x_inizio + 10, y_inizio + indice * altezza_cella + 10))
 
 # Funzione per rilevare il click sulla griglia
 def rileva_clic(x, y):
+    # Verifica se il clic avviene all'interno della griglia
     if offset_x <= x <= offset_x + colonne * larghezza_cella and \
        offset_y <= y <= offset_y + righe * altezza_cella:
         
+        # Calcola le coordinate relative alla griglia (dove x e y sono la posizione del mouse)
+        # Le nuove coordinate sono relative all'angolo in alto a sinistra della griglia
         x_relativo = x - offset_x
         y_relativo = y - offset_y
         
-        # Calcola la colonna e la riga cliccate
+        # Calcola quale colonna e quale riga sono state cliccate
+        # Per ottenere la colonna, dividiamo la distanza orizzontale dalla larghezza della cella
         colonna = x_relativo // larghezza_cella
+        # Per ottenere la riga, dividiamo la distanza verticale dall'altezza della cella
         riga = y_relativo // altezza_cella
 
+        # Stampa le informazioni di debug nella console per sapere quale cella è stata cliccata
         print(f'Cella cliccata: Colonna {colonna}, Riga {riga}')
-        return colonna, riga
+        return colonna, riga  # Restituisce la colonna e la riga cliccate
     
     else:
+        # Se il clic è fuori dalla griglia, stampiamo un messaggio di debug
         print('Clic fuori dalla griglia')
-        return None, None
+        return None, None  # Restituisce None se il clic è fuori dalla griglia
+
     
 ###################################################################################################################################################
 
@@ -275,10 +288,9 @@ tiro = False  # Stato del tiro dei dadi
 counter = 0  # Conteggio dei tiri effettuati
 max_tiri = 3  # Numero massimo di tiri consentiti
 turno = True  # True: Giocatore 1, False: Giocatore 2
-schermata= "crediti" #menu o gioco (le due fasi)
-inizio_errore = None
-in_game= False
-versione = "1.0.0"
+schermata= "menu" #da quale schermata inizia il gioco
+in_game= False # variabile per la schermata opzioni e regole (indietro)
+versione = "1.0.0" #versione gioco
 
 # oggetto dei giocatori
 giocatore1= Giocatore("")
@@ -287,8 +299,8 @@ giocatore2= Giocatore ("")
 # Variabili di stato
 input_attivo1 = False  # Campo attivo per Giocatore 1
 input_attivo2 = False  # Campo attivo per Giocatore 2
-input_musica= True
-input_effetti= True
+input_musica= True # musica on
+input_effetti= True # effetti sonori on
 
 #Musica
 pygame.mixer.music.load("suoni/suono_gioco.mp3")  # Caricamento della musica di sottofondo
@@ -296,41 +308,41 @@ pygame.mixer.music.play(-1, 0.0)  # Riproduzione in loop della musica di sottofo
 pygame.mixer.music.set_volume(0.3)  #volume della musica (da 0 a 1)
 
 #Effetti sonori
-suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # Caricamento del suono per il tiro dei dadi
-suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3")
-suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3")
+suono_roll = pygame.mixer.Sound("suoni/rolls.mp3")  # tiro dei dadi
+suono_selezionepunteggio= pygame.mixer.Sound("suoni/collect-points-190037.mp3") # selezione del punteggio
+suono_vittoria= pygame.mixer.Sound("suoni/winning-218995.mp3") # vittoria
 suono_vittoria.set_volume(0.3)
-suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3")
-#Effetto select
-suono_select = pygame.mixer.Sound("suoni/selezione.mp3")
+suono_inizio= pygame.mixer.Sound("suoni/game-start-6104.mp3") # inizio del gioco
+suono_select = pygame.mixer.Sound("suoni/selezione.mp3") #selezione dado
 suono_select.set_volume(0.3)
-# #Effetto deselect
-suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3")
+suono_deselect = pygame.mixer.Sound("suoni/deselezione.mp3") #deselezione dado
 suono_deselect.set_volume(0.3)
+
 
 # Ciclo principale del gioco (game loop)
 while run:
 
-    if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1:
+    #controllo se tutti e due i giocatori hanno completato le combinazioni disponibili (il -1 di riferisce al totale, che ovviamente non é preso in considerazione)
+    if len(giocatore1.tabellone) == len(combinazioni) - 1 and len(giocatore2.tabellone) == len(combinazioni) - 1: 
 
         pygame.mixer.music.stop() #ferma la musica di background
 
-        if giocatore1.totale > giocatore2.totale:
+        if giocatore1.totale > giocatore2.totale: #vittoria del giocatore 1
             screen.fill(blu)
             suono_vittoria.play()
-            if giocatore1.nome:
+            if giocatore1.nome: # se é presente il nome
                 vittoria = font_grande.render(f"{giocatore1.nome}, hai vinto ! !", True, white)
-            else:
+            else: # se non é presente
                 vittoria = font_grande.render("GIOCATORE 1, hai vinto ! !", True, white)
 
-        elif giocatore2.totale > giocatore1.totale:
+        elif giocatore2.totale > giocatore1.totale: #vittoria del giocatore 2
             screen.fill(red)
             suono_vittoria.play()
-            if giocatore2.nome:
+            if giocatore2.nome: # se é presente il nome
                 vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
-            else:
+            else: # se non é presente
                 vittoria = font_grande
-        else:
+        else: #pareggio
             screen.fill(beige)
             vittoria = font_grande.render("Pareggio ! : (", True, gray)
 
@@ -343,13 +355,13 @@ while run:
         run = False
         break
     
-    if schermata== "menu" :
+    if schermata== "menu" : #schermata iniziale menu
 
         in_game= False
 
         # Carica lo sfondo
         sfondo = pygame.image.load("immagini/sfondo.png")
-        screen.blit(sfondo, (0, 0))
+        screen.blit(sfondo, (0, 0)) #prende tutto lo schermo
 
         # Crea una superficie trasparente per il contenitore
         surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)  # Supporto trasparenza
@@ -468,7 +480,6 @@ while run:
                     schermata = "gioco"
                     suono_inizio.play()
 
-
         # Aggiorna la finestra
         pygame.display.flip()
     
@@ -478,6 +489,7 @@ while run:
         sfondo = pygame.image.load("immagini/sfondo.png")
         screen.blit(sfondo, (0, 0))
 
+        #rettangoli dei pulsanti
         rect_contenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
         rect_bordocontenitore2= pygame.Rect((screen_width-400)//2, 120,400,500)
         rect_indietro= pygame.Rect((screen_width-120)//2,530,120,50)
@@ -489,10 +501,11 @@ while run:
         rect_crediti= pygame.Rect((screen_width-180)//2, 400,180,90)
         rect_bordocrediti= pygame.Rect((screen_width-180)//2, 400,180,90)
 
+        #colori
         color_musica= bordeaux if input_musica else gray
         color_effetti= bordeaux if input_effetti else gray
 
-        #tutti i pulsanti
+        #tutti i pulsanti disegnati 
         pygame.draw.rect(screen, white, rect_contenitore2,0,8)
         pygame.draw.rect(screen, black, rect_bordocontenitore2, 5, 8)
         pygame.draw.rect(screen, teal ,rect_indietro,0,8 )
@@ -841,7 +854,7 @@ while run:
         x_pos2 = 430  # Posizione orizzontale per il Giocatore 2
 
         if turno:  # Mostra i punteggi per il turno del Giocatore 1
-            for combinazione, punteggio in punteggi.items():
+            for combinazione, punteggio in punteggi.items(): 
                 if combinazione in giocatore1.tabellone:  # Punteggi assegnati
                     testo_punteggio1 = font.render(f"{giocatore1.tabellone[combinazione]}", True, black)
                     screen.blit(testo_punteggio1, (x_pos1, y1_offset))
