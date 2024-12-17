@@ -371,7 +371,7 @@ while run:
             if giocatore2.nome: # se é presente il nome
                 vittoria = font_grande.render(f"{giocatore2.nome}, hai vinto ! !", True, white)
             else: # se non é presente
-                vittoria = font_grande
+                vittoria = font_grande.render("GIOCATORE 2, hai vinto ! !", True, white)
         else: #pareggio
             screen.fill(beige)
             vittoria = font_grande.render("Pareggio ! : (", True, gray)
