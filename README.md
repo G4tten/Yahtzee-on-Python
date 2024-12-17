@@ -20,7 +20,11 @@ This is a digital version of the popular dice game Yahtzee, implemented using th
 ---
 
 ## Screenshot 📸
-*(Inserisci qui immagini della schermata del menu, del gioco e del tabellone con punteggi.)*
+<img src="immagini/screenshot/home.png" alt=home>
+</br>
+<img src="immagini/screenshot/giocatore_1.png" alt=home>
+<img src="immagini/screenshot/giocatore_2.png" alt=home>
+</br>
 
 ---
 
@@ -78,11 +82,11 @@ This is a digital version of the popular dice game Yahtzee, implemented using th
 
 ## Authors 👩‍💻👨‍💻
 
-- @Gatten (Ludovica Gatti)
-- <òluishasleft (Luigi Gorgone)
+- [Ludovica Gatti (@G4tten)](https://github.com/G4tten)
+- [Luigi Gorgone (@luishasleft)](https://github.com/luishasleft)
 
 ---
-
+<!--
 ## Future improvements 🛠️
 
 1. Implementation of a score saving system.
@@ -100,5 +104,5 @@ This is a digital version of the popular dice game Yahtzee, implemented using th
 ---
 
 ## Licence 📄
-*(Specificare una licenza, ad esempio MIT, o lasciare libera se non necessario.)*
+*(Specificare una licenza, ad esempio MIT, o lasciare libera se non necessario.)* -->
 
