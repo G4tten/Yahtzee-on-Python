@@ -2,6 +2,7 @@
 
 <a href="https://visitcount.itsvg.in">
   <img src="https://visitcount.itsvg.in/api?id=G4tten&label=Profile%20Views&color=2&icon=0&pretty=true" />
+  <img src="https://visitcount.itsvg.in/api?id=G4tten&label=Stars&color=2&icon=9&pretty=true" />
 </a>
 
 <h1 align="center">
