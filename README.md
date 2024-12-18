@@ -41,7 +41,7 @@ This is a digital version of the popular dice game Yahtzee, implemented using th
 ## How to Start🚀
 
 ### Prerequisites
-- **Python 3.x**
+- **Python 3.12.8**
 - **Pygame library**: Install it with the command:
 
   ```bash
