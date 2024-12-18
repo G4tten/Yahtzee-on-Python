@@ -94,15 +94,17 @@ This is a digital version of the popular dice game Yahtzee, implemented using th
 3. Full screen mode.
 
 ---
+-->
 
 ## Credits and Resources 🎨
 
-- **Font**: Casino.ttf
-- **Sound Effects**: *(Specify source if downloaded from external sites)*.
-- **Graphics**: Customised dice images and backgrounds.
+- **Font**: Casino.ttf [<a href="https://www.dafont.com/casino-2.font">Site links]
+- **Sound Effects**: Sounds by <a href="https://pixabay.com/">Pixabay</a>.
+- **Dice Graphics**: images taken from <a href="https://it.vecteezy.com/vettori-gratis/nero">Nero Vettori di Vecteezy</a> [<a href="https://it.vecteezy.com/arte-vettoriale/6923039-linea-gioco-di-dadi-set-icona-set-di-dadi-puntati-lancio-da-uno-a-sei-dadi-per-casino-craps-tavolo-o-giochi-da-tavola-fortuna-e-scelta-casuale-vettore-illustrazione-isolato">Site links</a>]
+- **Background Images**: Created with AI
 
 ---
-
+<!--
 ## Licence 📄
-*(Specificare una licenza, ad esempio MIT, o lasciare libera se non necessario.)* -->
-
+*(Specificare una licenza, ad esempio MIT, o lasciare libera se non necessario.)*
+-->
